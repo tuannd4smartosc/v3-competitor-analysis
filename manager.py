@@ -11,7 +11,7 @@ from _agents.planner_agent import WebSearchItem, WebSearchPlan, planner_agent
 from _agents.search_agent import search_agent
 from _agents.writer_agent import ReportData, writer_agent
 from printer import Printer
-
+from file_handler import export_pdf
 
 class ResearchManager:
     def __init__(self):
@@ -48,6 +48,8 @@ class ResearchManager:
         print("\n\n=====FOLLOW UP QUESTIONS=====\n\n")
         follow_up_questions = "\n".join(report.follow_up_questions)
         print(f"Follow up questions: {follow_up_questions}")
+        export_pdf(report.markdown_report)
+        print("EXPORTED PDF SUCCESSFULLY!")
 
     async def _plan_searches(self, query: str) -> WebSearchPlan:
         self.printer.update_item("planning", "Planning searches...")

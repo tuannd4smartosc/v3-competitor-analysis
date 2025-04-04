@@ -11,6 +11,8 @@ python-dotenv = "^1.1.0"
 openai-agents = "^0.0.7"
 asyncio = "^3.4.3"
 rich = "^14.0.0"
+markdown = "^3.7"
+weasyprint = "^65.0"
 
 
 [build-system]
