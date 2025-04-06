@@ -3,20 +3,25 @@ from __future__ import annotations
 import asyncio
 import time
 
-from rich.console import Console
-
 from agents import Runner, custom_span, gen_trace_id, trace
 
 from _agents.planner_agent import WebSearchItem, WebSearchPlan, planner_agent
 from _agents.search_agent import search_agent
 from _agents.writer_agent import ReportData, writer_agent
 from printer import Printer
-from file_handler import export_pdf
+from file_handler import export_md
+from datetime import datetime
+from utils import markdown_to_pdf
+import os
+from email_sender import send_email_with_attachment
+from config import REPORT_DIR
 
 class ResearchManager:
-    def __init__(self):
-        self.console = Console()
-        self.printer = Printer(self.console)
+    def __init__(self, id, printer):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.printer = printer
+        self.file_name = f"{id}-{timestamp}.md"
+        self.id = id
 
     async def run(self, query: str) -> None:
         trace_id = gen_trace_id()
@@ -30,7 +35,7 @@ class ResearchManager:
 
             self.printer.update_item(
                 "starting",
-                "Starting research...",
+                "\nStarting research...",
                 is_done=True,
                 hide_checkmark=True,
             )
@@ -47,9 +52,20 @@ class ResearchManager:
         print(f"Report: {report.markdown_report}")
         print("\n\n=====FOLLOW UP QUESTIONS=====\n\n")
         follow_up_questions = "\n".join(report.follow_up_questions)
-        print(f"Follow up questions: {follow_up_questions}")
-        export_pdf(report.markdown_report)
-        print("EXPORTED PDF SUCCESSFULLY!")
+        print(f"\n\nFollow up questions: {follow_up_questions}")
+        export_md(report.markdown_report, self.file_name)
+        print("\n\nEXPORTED REPORT MD SUCCESSFULLY!")
+        pdf_path = os.path.join(REPORT_DIR, self.file_name.replace(".md", ".pdf"))
+        markdown_to_pdf(report.markdown_report, pdf_path)
+        print("\nEXPORTED REPORT PDF SUCCESSFULLY!")
+        subject = f"Competitor Analysis Report: {self.id}"
+        body = "This is a test email with an attachment sent via Mailtrap."
+        from_email = "sender@example.com"  
+        to_email = "recipient@example.com"  
+        file_paths = [pdf_path]
+        print("\n\n START SENDING EMAIL!")
+        send_email_with_attachment(subject, body, from_email, to_email, report.markdown_report, file_paths)
+        print("\n\n SENT EMAIL SUCCESSFULLY!")
 
     async def _plan_searches(self, query: str) -> WebSearchPlan:
         self.printer.update_item("planning", "Planning searches...")
@@ -93,20 +109,20 @@ class ResearchManager:
             return None
 
     async def _write_report(self, query: str, search_results: list[str]) -> ReportData:
-        self.printer.update_item("writing", "Thinking about report...")
+        self.printer.update_item("writing", "\nThinking about report...")
         input = f"Original query: {query}\nSummarized search results: {search_results}"
         result = Runner.run_streamed(
             writer_agent,
             input,
         )
         update_messages = [
-            "Thinking about report...",
-            "Planning report structure...",
-            "Writing outline...",
-            "Creating sections...",
-            "Cleaning up formatting...",
-            "Finalizing report...",
-            "Finishing report...",
+            "\nThinking about report...",
+            "\nPlanning report structure...",
+            "\nWriting outline...",
+            "\nCreating sections...",
+            "\nCleaning up formatting...",
+            "\nFinalizing report...",
+            "\nFinishing report...",
         ]
 
         last_update = time.time()

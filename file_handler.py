@@ -1,7 +1,8 @@
 from weasyprint import HTML
 from markdown import markdown
 from datetime import datetime
-
+import os
+from config import REPORT_DIR
 
 def export_pdf(markdown_content):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -36,3 +37,10 @@ def export_pdf(markdown_content):
 
     # Convert to PDF using WeasyPrint
     HTML(string=html_template).write_pdf(f"output_file-{timestamp}.pdf")
+
+
+def export_md(markdown_content, output_filename):
+    os.makedirs(REPORT_DIR, exist_ok=True)
+    file_path = os.path.join(REPORT_DIR, output_filename)
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(markdown_content)

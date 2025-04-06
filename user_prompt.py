@@ -1,15 +1,8 @@
-import asyncio
 
-from manager import ResearchManager
-from dotenv import load_dotenv
-from printer import Printer
-from rich.console import Console
-
-load_dotenv()
-
+# Generate prompt function from your original script
 def generate_prompt(company_name: str, competitor_names: str, date: str, region: str) -> str:
     return (
-       f"""
+        f"""
         Generate a comprehensive competitor analysis report for **{company_name}** versus **{competitor_names}** in **{region}** 
         for the date range: **{date}**. 
 
@@ -31,17 +24,3 @@ def generate_prompt(company_name: str, competitor_names: str, date: str, region:
         Finally, based on your analysis, suggest **a strategic action plan** for {company_name} to improve its market position and campaign effectiveness in {region}.
         """
     )
-
-async def main() -> None:
-    company_name = input("What is your company's name? ")
-    competitor_names = input("What are your competitors' names? ")
-    date = input("What is the date? ")
-    region = input("What is the focused region? ")
-    query = generate_prompt(company_name, competitor_names, date, region)
-    print(f"Generated query: {query}")
-    print("Starting research...")
-    await ResearchManager(f"{company_name}_ca_{date}_{region}", Printer(Console())).run(query)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

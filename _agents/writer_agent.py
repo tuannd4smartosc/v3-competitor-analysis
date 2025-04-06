@@ -25,7 +25,7 @@ PROMPT = (
     "- **Strategic Insights**: Discuss market trends, white spaces, and strategic moves observed.\n"
     "- **Impact Assessment**: Analyze how each competitor's actions may affect the client's position.\n"
     "- **Conclusion & Recommendations**: Summarize key takeaways and strategic suggestions.\n\n"
-    "- **Appendices**: Include any additional data, charts, or references that support the analysis.\n\n"
+    "- **Appendices**: Include any additional data, tables, or references that support the analysis.\n\n"
     "- **References**: Provide a list of all sources used in the report, including links to data and statistics.\n\n"
 
     "Formatting & Style Requirements:\n"
@@ -55,6 +55,6 @@ class ReportData(BaseModel):
 writer_agent = Agent(
     name="WriterAgent",
     instructions=PROMPT,
-    model="o1",
+    model="gpt-4o-mini",
     output_type=ReportData,
 )
