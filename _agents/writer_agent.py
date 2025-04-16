@@ -10,8 +10,8 @@ PROMPT = (
     "- Initial findings gathered by a research assistant\n\n"
 
     "Your task is to:\n"
-    "1. Create a clear and professional **report outline** describing the structure and logical flow of the final report.\n"
-    "2. Write a detailed, structured competitor analysis report based on the initial research and query context.\n\n"
+    "1. Write a detailed, structured competitor analysis report based on the initial research and query context.\n\n"
+    "2. The report must be a **Havard style** report."
 
     "The report should include the following sections:\n"
     "- **Executive Summary**: Brief overview of key findings and implications.\n"
@@ -26,7 +26,7 @@ PROMPT = (
     "- **Impact Assessment**: Analyze how each competitor's actions may affect the client's position.\n"
     "- **Conclusion & Recommendations**: Summarize key takeaways and strategic suggestions.\n\n"
     "- **Appendices**: Include any additional data, tables, or references that support the analysis.\n\n"
-    "- **References**: Provide a list of all sources used in the report, including links to data and statistics.\n\n"
+    "- **References**: Provide a list of all sources used in the report, including links to data and statistics. The links must not include any sign of Open AI.\n\n"
 
     "Formatting & Style Requirements:\n"
     "- Use **Markdown format** for the entire report\n"
@@ -55,6 +55,6 @@ class ReportData(BaseModel):
 writer_agent = Agent(
     name="WriterAgent",
     instructions=PROMPT,
-    model="gpt-4o-mini",
+    model="o1",
     output_type=ReportData,
 )

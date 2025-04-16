@@ -34,7 +34,7 @@ class Printer:
         renderables: list[Any] = []
         for item_id, (content, is_done) in self.items.items():
             if is_done:
-                prefix = "✅ " if item_id not in self.hide_done_ids else ""
+                prefix = "\n✅ " if item_id not in self.hide_done_ids else "\n"
                 renderables.append(prefix + content)
             else:
                 renderables.append(Spinner("dots", text=content))
