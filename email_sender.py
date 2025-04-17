@@ -101,7 +101,7 @@ def send_email_with_attachment(subject, body, from_email, to_email, markdown_res
         </head>
         <body>
             <div class="email-container">
-                <img src="https://careers.smartosc.com/wp-content/uploads/2021/12/logo-2023_update-removebg-preview.png" alt="Levi's Logo" class="logo">
+                <img src="https://media.about.nike.com/image-downloads/cf68f541-fc92-4373-91cb-086ae0fe2f88/002-nike-logos-swoosh-white.jpg" alt="Levi's Logo" class="logo">
                 <h1>Smart Competitors Analysis</h1>
                 {email_content}
                 <div class="confidentiality">

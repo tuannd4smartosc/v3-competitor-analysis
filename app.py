@@ -13,7 +13,7 @@ from st_printer import Printer
 load_dotenv()
 
 # Streamlit configuration
-st.set_page_config(page_title="Competitor Analysis Dashboard", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Nike's Competitors Analysis Dashboard", layout="wide", initial_sidebar_state="expanded")
 
 # Sidebar for report filtering
 st.sidebar.title("Reports")
@@ -26,8 +26,8 @@ md_reports = sort_file_names(report_files)
 selected_report = st.sidebar.selectbox("Select a Report", md_reports)
 
 # Main dashboard
-st.title("Competitor Analysis Dashboard")
-st.markdown("Analyze competitor pricing and promotions with a single click!")
+st.title("Nike's Competitor Analysis Dashboard")
+st.markdown("Analyze Nike's competitor pricing and promotions with a single click!")
 
 # Input fields for analysis
 # company_name = st.text_input("Your Company's Name", placeholder="e.g., Acme Corp", value="Nike")
