@@ -30,7 +30,8 @@ st.title("Competitor Analysis Dashboard")
 st.markdown("Analyze competitor pricing and promotions with a single click!")
 
 # Input fields for analysis
-company_name = st.text_input("Your Company's Name", placeholder="e.g., Acme Corp", value="Nike")
+# company_name = st.text_input("Your Company's Name", placeholder="e.g., Acme Corp", value="Nike")
+company_name = "Nike"
 competitor_names = st.text_input("Competitors' Names", placeholder="e.g., Beta Inc, Gamma Ltd", value="Adidas")
 date = st.text_input("Date Range", placeholder="e.g., Q1 2025", value="October 2024 to March 2025")
 region = st.text_input("Focused Region", placeholder="e.g., North America", value="Southeast Asia")
