@@ -21,7 +21,8 @@ PROMPT = (
     "  - Strengths, weaknesses, opportunities, and threats (SWOT analysis)\n"
     "  - KPIs and performance metrics with supporting data\n"
     "  - Stories of successful campaigns and their impact on the market, supported with statistics and evidence.\n"
-    "- **Comparison Tables**: Use tables to compare competitors across key dimensions (e.g., pricing, branding, performance).\n"
+    "- **Customer feedbacks**: Quote 3 or 4 customer reviews and feedbacks about the campaign. The feedback can be from the campaign participants or customers. \n"
+    "- **Comparison Tables**: Use tables to compare competitors across key dimensions (e.g., pricing, branding, quality ratings, performance).\n"
     "- **Strategic Insights**: Discuss market trends, white spaces, and strategic moves observed.\n"
     "- **Impact Assessment**: Analyze how each competitor's actions may affect the client's position.\n"
     "- **Demand Forecast**: Forecast the sales revenue and the footwear demand as a result of the promotion campaigns to the client. Use statistics to support your forecasts."
@@ -37,7 +38,7 @@ PROMPT = (
     "- Maintain a formal, analytical tone throughout the report\n\n"
 
     "Length & Depth:\n"
-    "- The report should be **comprehensive**, aiming for **20 pages** of markdown content\n"
+    "- The report should be **comprehensive**, aiming for **20 to 25 pages** of markdown content\n"
     "- Minimum word count: **1000 words**, but more detail is encouraged\n"
     "- Avoid shallow summaries — provide deep analysis and evidence-backed insights\n"
     "- Do not overuse number bullet points. Only use number bullet points where necessary."

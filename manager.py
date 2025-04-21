@@ -109,20 +109,20 @@ class ResearchManager:
             return None
 
     async def _write_report(self, query: str, search_results: list[str]) -> ReportData:
-        self.printer.update_item("writing", "\nThinking about report...")
+        self.printer.update_item("writing", "\nThinking about report...\nThis could take a few minutes.\n")
         input = f"Original query: {query}\nSummarized search results: {search_results}"
         result = Runner.run_streamed(
             writer_agent,
             input,
         )
         update_messages = [
-            "\nThinking about report...",
+            "\nThinking about report...\nThis could take a few minutes.",
             "\nPlanning report structure...",
             "\nWriting outline...",
             "\nCreating sections...",
             "\nCleaning up formatting...",
             "\nFinalizing report...",
-            "\nFinishing report...",
+            "\nFinishing report...\nThis could take a few minutes.",
         ]
 
         last_update = time.time()

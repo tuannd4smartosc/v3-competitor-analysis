@@ -17,8 +17,9 @@ INSTRUCTIONS = (
     "8. **Competitive Analysis** — Analyze how competing brands' campaigns during the same date range impacted this campaign’s performance.\n"
     "9. **Historical Comparison** — Compare the campaign with previous campaigns by the same brand.\n"
     "   - Use concrete examples and include reference links if available.\n"
-    "10. **Sales revenue forecast** - Forecast sales revenue the footwear industry in the next five years, with supporting data and statistics. \n"
-    "11. **Contextual Events** — Highlight any major events or trends within the given date range that may have influenced the campaign’s performance (e.g., holidays, economic shifts, cultural moments).\n\n"
+    "10. **Customer feedbacks**: - Gather 3 to 4 feedbacks from customers or participants about the campaign with referenced quotes.\n"
+    "11. **Sales revenue forecast** - Forecast sales revenue the footwear industry in the next five years, with supporting data and statistics. \n"
+    "12. **Contextual Events** — Highlight any major events or trends within the given date range that may have influenced the campaign’s performance (e.g., holidays, economic shifts, cultural moments).\n\n"
     
     "Always support your insights with data, cite sources when possible, and maintain a clear, concise, and professional tone."
 )
