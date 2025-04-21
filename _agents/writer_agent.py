@@ -24,6 +24,7 @@ PROMPT = (
     "- **Comparison Tables**: Use tables to compare competitors across key dimensions (e.g., pricing, branding, performance).\n"
     "- **Strategic Insights**: Discuss market trends, white spaces, and strategic moves observed.\n"
     "- **Impact Assessment**: Analyze how each competitor's actions may affect the client's position.\n"
+    "- **Demand Forecast**: Forecast the sales revenue and the footwear demand as a result of the promotion campaigns to the client. Use statistics to support your forecasts."
     "- **Conclusion & Recommendations**: Summarize key takeaways and strategic suggestions.\n\n"
     "- **Appendices**: Include any additional data, tables, or references that support the analysis.\n\n"
     "- **References**: Provide a list of all sources used in the report, including links to data and statistics. The links must not include any sign of Open AI.\n\n"
@@ -39,6 +40,7 @@ PROMPT = (
     "- The report should be **comprehensive**, aiming for **20 pages** of markdown content\n"
     "- Minimum word count: **1000 words**, but more detail is encouraged\n"
     "- Avoid shallow summaries — provide deep analysis and evidence-backed insights\n"
+    "- Do not overuse number bullet points. Only use number bullet points where necessary."
 )
 
 class ReportData(BaseModel):

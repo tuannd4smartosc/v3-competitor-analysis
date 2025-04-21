@@ -9,7 +9,7 @@ PROMPT = (
     "keywords, related concepts, and the underlying intent. Make sure to include various types of search terms "
     "(e.g., factual questions, exploratory searches, related terms, synonyms, and relevant subtopics). "
     "Additionally, consider refining the search terms to ensure high-quality, focused results. "
-    "Your output should be a list of searches that can cover different angles of the query, addressing any nuances "
+    "Your output should be a list of searches (15 searches minimum, encourage to search more if necessary) that can cover different angles of the query, addressing any nuances "
     "and ensuring comprehensive coverage of the topic."
 )
 
