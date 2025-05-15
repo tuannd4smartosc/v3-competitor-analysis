@@ -23,8 +23,6 @@ PROMPT = (
     "  - Stories of successful campaigns and their impact on the market, supported with statistics and evidence.\n"
     "- **Customer feedbacks**: Quote 3 or 4 customer reviews and feedbacks about the campaign. The feedback can be from the campaign participants or customers. \n"
     "- **Comparison Tables**: Use tables to compare competitors across key dimensions (e.g., pricing, branding, quality ratings, performance).\n"
-    "- **Strategic Insights**: Discuss market trends, white spaces, and strategic moves observed.\n"
-    "- **Impact Assessment**: Analyze how each competitor's actions may affect the client's position.\n"
     "- **Demand Forecast**: Forecast the sales revenue and the footwear demand as a result of the promotion campaigns to the client. Use statistics to support your forecasts."
     "- **Conclusion & Recommendations**: Summarize key takeaways and strategic suggestions.\n\n"
     "- **Appendices**: Include any additional data, tables, or references that support the analysis.\n\n"
