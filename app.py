@@ -40,14 +40,11 @@ default_competitors = [
     "Sketchers", "Under Armour", "Reebok", "ASICS", "Fila"
 ]
 
-competitor_names = st_tags(
-    label="Competitor Names",
-    text="Type a name and press enter",
-    value=[],
-    suggestions=default_competitors,
-    maxtags=15,
-    key="competitor_tags"
-)
+competitor_names = st.multiselect("Competitors' Names", 
+                                  ["Adidas", "Levis", "New Balance", "Lululemon","Puma", 
+                                   "Sketchers","Under Armour", "Reebok", "ASICS", "Fila"],
+                                   accept_new_options=True,
+                                   )
 
 today = datetime.date.today()
 start_date = today
