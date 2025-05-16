@@ -14,16 +14,104 @@ def export_pdf(markdown_content):
     <head>
         <meta charset="utf-8">
         <style>
-            body {{ font-family: Arial, sans-serif; color: #333; margin: 0; padding: 20px;}}
-            .report-container {{ max-width: 800px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }}
-            h1, h2, h3 {{ color: #2c3e50; }}
-            table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-            th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
-            th {{ background-color: #f4f4f4; color: #2c3e50; font-weight: bold; }}
-            td {{ background-color: #fff; }}
-            tr:nth-child(odd) td {{ background-color: #f9f9f9; }}
-            p, li {{ line-height: 1.6; margin: 10px 0; }}
-            ol {{ padding-left: 20px; }}
+            @page {{
+                size: A4 landscape;
+                margin: 2cm;
+            }}
+
+            body {{
+                font-family: "Georgia", serif;
+                color: #2a2a2a;
+                line-height: 1.6;
+                font-size: 12pt;
+                background: white;
+            }}
+
+            h1, h2, h3, h4 {{
+                font-family: "Helvetica Neue", sans-serif;
+                color: #003366;
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+            }}
+
+            h1 {{
+                font-size: 22pt;
+                border-bottom: 2px solid #003366;
+                padding-bottom: 0.3em;
+            }}
+
+            h2 {{
+                font-size: 18pt;
+                border-left: 4px solid #003366;
+                padding-left: 10px;
+            }}
+
+            h3 {{
+                font-size: 16pt;
+                color: #0055aa;
+            }}
+
+            h4 {{
+                font-size: 14pt;
+                color: #336699;
+            }}
+
+            p {{
+                margin: 0 0 1em 0;
+                text-align: justify;
+            }}
+
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1.5em 0;
+                font-size: 11pt;
+            }}
+
+            th, td {{
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }}
+
+            th {{
+                background-color: #f2f2f2;
+                font-weight: bold;
+                color: #003366;
+            }}
+
+            tr:nth-child(even) {{
+                background-color: #f9f9f9;
+            }}
+
+            code {{
+                background: #f4f4f4;
+                padding: 2px 4px;
+                font-size: 10pt;
+                border-radius: 4px;
+            }}
+
+            ul, ol {{
+                margin: 0 0 1em 1.5em;
+            }}
+
+            .page-break {{
+                page-break-before: always;
+            }}
+
+            .footer {{
+                text-align: center;
+                font-size: 9pt;
+                color: #999999;
+                margin-top: 3em;
+            }}
+
+            blockquote {{
+                border-left: 4px solid #cccccc;
+                padding-left: 1em;
+                font-style: italic;
+                color: #555555;
+            }}
         </style>
     </head>
     <body>
