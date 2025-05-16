@@ -19,6 +19,15 @@ st.set_page_config(page_title="Nike's Competitors Analysis Dashboard", layout="w
 
 # Sidebar for report filtering
 st.sidebar.title("Reports")
+options = st.multiselect(
+    "What are your favorite cat names?",
+    ["Jellybeans", "Fish Biscuit", "Madam President"],
+    max_selections=5,
+    accept_new_options=True,
+)
+
+st.write("You selected:", options)
+
 if not os.path.exists(REPORT_DIR):
     os.makedirs(REPORT_DIR)
 
@@ -129,6 +138,10 @@ st.markdown(
     }
     h1, h2, h3 {
         color: #2c3e50;
+    }
+
+    .st-emotion-cache-179n174 {
+        display: block;
     }
     </style>
     """,
