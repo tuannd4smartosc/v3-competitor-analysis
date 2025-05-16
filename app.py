@@ -9,6 +9,7 @@ from utils import show_confetti, markdown_to_pdf, get_pdf_download_link, sort_fi
 from user_prompt import generate_prompt
 from st_printer import Printer
 import datetime
+from streamlit_tags import st_tags
 
 # Load environment variables (e.g., API keys)
 load_dotenv()
@@ -33,7 +34,20 @@ st.markdown("Analyze Nike's competitor pricing and promotions with a single clic
 # Input fields for analysis
 # company_name = st.text_input("Your Company's Name", placeholder="e.g., Acme Corp", value="Nike")
 company_name = "Nike"
-competitor_names = st.multiselect("Competitors' Names", ["Adidas", "Levis", "New Balance", "Lululemon","Puma", "Sketchers","Under Armour", "Reebok", "ASICS", "Fila"])
+
+default_competitors = [
+    "Adidas", "Levis", "New Balance", "Lululemon", "Puma",
+    "Sketchers", "Under Armour", "Reebok", "ASICS", "Fila"
+]
+
+competitor_names = st_tags(
+    label="Competitor Names",
+    text="Type a name and press enter",
+    value=[],
+    suggestions=default_competitors,
+    maxtags=15,
+    key="competitor_tags"
+)
 
 today = datetime.date.today()
 start_date = today
@@ -49,7 +63,7 @@ date = st.date_input(
     format="MM.DD.YYYY",
 )
 
-region = st.multiselect("Focused Regions", ["Southeast Asia", "North America"])
+region = st.selectbox("Focused Regions", ["Greater China", "North America", "Europe", "Middle East & Africa (EMEA)", "Asia Pacific & latin America (ALPA)" ])
 
 # Button to run analysis
 if st.button("Run Competitor Analysis"):
