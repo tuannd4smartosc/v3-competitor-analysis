@@ -8,6 +8,7 @@ from config import REPORT_DIR  # Assuming REPORT_DIR is defined in config
 from utils import show_confetti, markdown_to_pdf, get_pdf_download_link, sort_file_names  # Keep these utilities
 from user_prompt import generate_prompt
 from st_printer import Printer
+import datetime
 
 # Load environment variables (e.g., API keys)
 load_dotenv()
@@ -32,9 +33,23 @@ st.markdown("Analyze Nike's competitor pricing and promotions with a single clic
 # Input fields for analysis
 # company_name = st.text_input("Your Company's Name", placeholder="e.g., Acme Corp", value="Nike")
 company_name = "Nike"
-competitor_names = st.text_input("Competitors' Names", placeholder="e.g., Beta Inc, Gamma Ltd", value="Adidas")
-date = st.text_input("Date Range", placeholder="e.g., Q1 2025", value="October 2024 to March 2025")
-region = st.text_input("Focused Region", placeholder="e.g., North America", value="Southeast Asia")
+competitor_names = st.multiselect("Competitors' Names", ["Adidas", "Levis", "New Balance", "Lululemon","Puma", "Sketchers","Under Armour", "Reebok", "ASICS", "Fila"])
+
+today = datetime.date.today()
+start_date = today
+end_date = today.replace(year=today.year + 5)
+
+default_start = today
+default_end = today + datetime.timedelta(days=365)
+
+date = st.date_input(
+    "Date Range",
+    value=(default_start, default_end),
+    max_value=end_date,
+    format="MM.DD.YYYY",
+)
+
+region = st.multiselect("Focused Regions", ["Southeast Asia", "North America"])
 
 # Button to run analysis
 if st.button("Run Competitor Analysis"):
