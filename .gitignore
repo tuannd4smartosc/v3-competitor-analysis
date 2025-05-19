@@ -60,18 +60,27 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
+ Adidas in Southeast Asia (April–May 2025): A
+Comprehensive Competitor Analysis
+Executive Summary
+This competitor analysis report provides an in-depth comparative examination of Nike and Adidas in Southeast Asia
+(SEA) for the period of April to May 2025. Building on both primary and secondary data sources—from industry
+news, financial statements, regional press releases, consumer testimony, and marketplace analyses—the report
+focuses on four main areas:
+Promotional Campaigns: At least four major campaigns per brand are dissected, detailing objectives,
+mechanics, budgets, creative strategies, and performance indicators.
+Price Comparisons by Campaign: Pricing details, discount strategies, and promotional models are
+presented in Markdown tables for clarity and reference.
+Traffic & Revenue Analysis: A region-specific exploration of web traffic, e-commerce penetration, revenue
+estimates, and return on investment (ROI). Campaign-by-campaign breakdowns underscore implications for
+overall market share.
+Customer Feedback: Representative quotes, user testimonies, and sentiment analysis highlight on-the-
+ground reactions to the respective campaigns.
+1. 
+2. 
+3. 
+4. 
 
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
 
 # IPython
 profile_default/
@@ -132,3 +141,5 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+tests/

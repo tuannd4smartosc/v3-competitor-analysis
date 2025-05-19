@@ -8,8 +8,44 @@ from weasyprint import HTML
 def show_confetti():
     st.balloons()
 
+def generate_title_from_markdown(markdown_text):
+    match = re.search(r'^#\s+(.*)', markdown_text, re.MULTILINE)
+    if match:
+        title = match.group(1).strip()
+        markdown_text = markdown_text.replace(match.group(0), '', 1).lstrip()
+        return title
+    return "Untitled Report", markdown_text
+
+
+def generate_toc_from_markdown(markdown_text):
+    toc_entries = []
+    modified_lines = []
+
+    header_index = 0
+
+    for line in markdown_text.splitlines():
+        heading_match = re.match(r'^(#{2,3})\s+(.*)', line)
+        if heading_match:
+            hashes, title = heading_match.groups()
+            level = len(hashes)
+            anchor_id = f'section-{header_index}'
+            indent = '  ' * (level - 1)
+            toc_entries.append(f'{indent}<li style="margin-left: {(level - 1) * 1}em; list-style-type: none;"><span style="font-family: "Georgia", serif; all: unset; font-size: 12pt;"><a href="#{anchor_id}" style="color:#2a2a2a;text-decoration: none">{title}</a></span></li>')
+            line = f'{hashes} <a id="{anchor_id}"></a>{title}'
+            header_index += 1
+
+        modified_lines.append(line)
+
+    toc_html = "<div class='toc'><h2>Table of Contents</h2>\n<ul>\n" + "\n".join(toc_entries) + "\n</ul>\n</div>\n<div style='page-break-after: always;'></div>"
+    updated_markdown = "\n".join(modified_lines)
+
+    return toc_html, updated_markdown
+
 def markdown_to_pdf(markdown_text, output_path):
-    html_text = markdown(markdown_text, extensions=['markdown.extensions.tables', 'markdown.extensions.extra', 'markdown.extensions.nl2br'])
+    toc_html, updated_markdown = generate_toc_from_markdown(markdown_text)
+    title_html = generate_title_from_markdown(markdown_text)
+
+    html_text = markdown(updated_markdown + "\n\n", extensions=['markdown.extensions.tables', 'markdown.extensions.extra', 'markdown.extensions.nl2br'])
     styled_html = f"""
     <body>
         <style>
@@ -53,6 +89,18 @@ def markdown_to_pdf(markdown_text, output_path):
             h4 {{
                 font-size: 14pt;
                 color: #336699;
+                
+            }}
+            .cover {{
+                display: flex;
+                height: 90vh;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 28pt;
+                font-weight: bold;
+                color: #003366;
+                page-break-after: always;
             }}
 
             p {{
@@ -112,6 +160,8 @@ def markdown_to_pdf(markdown_text, output_path):
                 color: #555555;
             }}
         </style>
+        <div class="cover">{title_html}</div>
+        {toc_html}
         <div class="report-container">
             {html_text}
         </div>
