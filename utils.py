@@ -30,6 +30,12 @@ def generate_toc_from_markdown(markdown_text):
             level = len(hashes)
             anchor_id = f'section-{header_index}'
             indent = '  ' * (level - 1)
+            
+            if level == 2:
+                title = f'<strong>{title}</strong>'
+            else:
+                title = title
+
             toc_entries.append(f'{indent}<li style="margin-left: {(level - 1) * 1}em; list-style-type: none;"><span style="font-family: "Georgia", serif; all: unset; font-size: 12pt;"><a href="#{anchor_id}" style="color:#2a2a2a;text-decoration: none">{title}</a></span></li>')
             line = f'{hashes} <a id="{anchor_id}"></a>{title}'
             header_index += 1
