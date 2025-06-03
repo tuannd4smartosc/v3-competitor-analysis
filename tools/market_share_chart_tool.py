@@ -36,6 +36,13 @@ class PieChartData(BaseModel):
     class Config: 
         extra = "forbid"
     
+class PieChartResponse(BaseModel):
+    """Response model for the pie chart generation."""
+    image_path: str
+    """Path to the generated pie chart image."""
+    
+    description: str
+    """Description of the pie chart, including the data it represents. Should be one or two sentences long."""
 
 
 async def generate_market_share_pie_chart(company_market_shares: CompanyMarketSharesData):
@@ -46,7 +53,6 @@ async def generate_market_share_pie_chart(company_market_shares: CompanyMarketSh
     market_share_data = PieChartData(
         labels=pie_labels,
         values=pie_values,
-        colors=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"],
         explode=[0.0] * len(pie_labels),
     )
 
@@ -68,6 +74,6 @@ async def function_tool_generate_market_share_pie_chart(
 market_share_chart_tool = FunctionTool(
     name="generate_market_share_pie_chart",
     description="Generates a pie chart visualizing the market shares of different companies.",
-    on_invoke_tool=function_tool_generate_market_share_pie_chart,
+    on_invoke_tool=generate_market_share_pie_chart,
     params_json_schema=CompanyMarketSharesData.model_json_schema(),
 )

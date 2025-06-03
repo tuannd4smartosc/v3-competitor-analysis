@@ -141,7 +141,7 @@ class ResearchManager:
     
     async def _generate_charts(self, search_results: list[str]) -> None:
         self.printer.update_item("generating_charts", "Generating charts...")
-        input = f"Search results: {search_results} \nGenerate a pie chart of the market share of the top footwear companies."
+        input = f"Search results: {search_results} \nGenerate a pie chart of the market share of the provided companies."
         result = await Runner.run(
             chart_agent,
             input,
