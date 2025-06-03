@@ -181,50 +181,73 @@ elif selected_report == "No reports match your filters":
 st.markdown(
     """
     <style>
-    .stDownloadButton > button {
-        width: fit-content;
-        background-color: red;
-        color: white;
-        border-radius: 5px;
-        padding: 10px 20px;
-        transition: background-color 0.3s;
-    }
-
-    .stDownloadButton>button:hover {
-        background-color: #ffffff;
-        color: red;
-        border: 1px solid red;
-    }
-
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 5px;
-        padding: 10px 20px;
-        transition: background-color 0.3s;
-    }
-    .stButton>button:hover {
-        background-color: #ffffff;
-        color: #4CAF50;
-        border: 1px solid #4CAF50;
-    }
-    .stSidebar {
-        background-color: #f8f9fa;
-    }
-    .stProgress .st-bo {
-        background-color: #4CAF50;
-    }
+    /* General Typography */
     body {
-        font-family: 'Arial', sans-serif;
-    }
-    h1, h2, h3 {
-        color: #2c3e50;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 16px;
+        color: #333;
     }
 
+    h1, h2, h3 {
+        color: #1f2e4d;
+        font-weight: 600;
+    }
+
+    /* Download Button */
+    .stDownloadButton > button {
+        width: auto;
+        background-color: #0052cc;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .stDownloadButton > button:hover {
+        background-color: #003d99;
+        color: #ffffff;
+    }
+
+    /* Standard Button */
+    .stButton > button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .stButton > button:hover {
+        background-color: #218838;
+        color: white;
+    }
+
+    /* Sidebar Styling */
+    .stSidebar {
+        background-color: #f1f3f6;
+    }
+
+    /* Progress Bar */
+    .stProgress .st-bo {
+        background-color: #28a745;
+    }
+
+    /* Hide Streamlit default style that breaks layout if needed */
     .st-emotion-cache-179n174 {
         display: block;
     }
     </style>
+
     """,
     unsafe_allow_html=True
 )

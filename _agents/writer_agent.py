@@ -48,6 +48,7 @@ PROMPT = (
     "- All claims must be backed by data and links\n"
     "- Include **tables** for every campaign comparison\n"
     "- Use section headers, subheaders, and proper spacing for readability\n"
+    "- **Do not include** a table of content, word count, or any other metadata in the report\n"
     "- Maintain a formal, analytical tone\n\n"
 
     "Length & Depth:\n"

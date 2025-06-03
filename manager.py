@@ -5,6 +5,7 @@ import time
 
 from agents import Runner, custom_span, gen_trace_id, trace
 
+from _agents.chart_agent import chart_agent
 from _agents.planner_agent import WebSearchItem, WebSearchPlan, planner_agent
 from _agents.search_agent import search_agent
 from _agents.writer_agent import ReportData, writer_agent
@@ -41,22 +42,24 @@ class ResearchManager:
             )
             search_plan = await self._plan_searches(query)
             search_results = await self._perform_searches(search_plan)
-            report = await self._write_report(query, search_results)
-
-            final_report = f"Report summary\n\n{report.short_summary}"
-            self.printer.update_item("final_report", final_report, is_done=True)
+            # report = await self._write_report(query, search_results)
+            chart_output_file = await self._generate_charts(search_results)
+            
+            print("chart_output_file",chart_output_file)
+            # final_report = f"Report summary\n\n{report.short_summary}"
+            # self.printer.update_item("final_report", final_report, is_done=True)
 
             self.printer.end()
 
         print("\n\n=====REPORT=====\n\n")
-        print(f"Report: {report.markdown_report}")
+        # print(f"Report: {report.markdown_report}")
         print("\n\n=====FOLLOW UP QUESTIONS=====\n\n")
-        follow_up_questions = "\n".join(report.follow_up_questions)
-        print(f"\n\nFollow up questions: {follow_up_questions}")
-        export_md(report.markdown_report, self.file_name)
+        # follow_up_questions = "\n".join(report.follow_up_questions)
+        # print(f"\n\nFollow up questions: {follow_up_questions}")
+        # export_md(report.markdown_report, self.file_name)
         print("\n\nEXPORTED REPORT MD SUCCESSFULLY!")
         pdf_path = os.path.join(REPORT_DIR, self.file_name.replace(".md", ".pdf"))
-        markdown_to_pdf(report.markdown_report, pdf_path)
+        # markdown_to_pdf(report.markdown_report, pdf_path)
         print("\nEXPORTED REPORT PDF SUCCESSFULLY!")
         subject = f"Competitor Analysis Report: {self.id}"
         body = "This is a test email with an attachment sent via Mailtrap."
@@ -64,7 +67,7 @@ class ResearchManager:
         to_email = "recipient@example.com"  
         file_paths = [pdf_path]
         print("\n\n START SENDING EMAIL!")
-        send_email_with_attachment(subject, body, from_email, to_email, report.markdown_report, file_paths)
+        # send_email_with_attachment(subject, body, from_email, to_email, report.markdown_report, file_paths)
         print("\n\n SENT EMAIL SUCCESSFULLY!")
 
     async def _plan_searches(self, query: str) -> WebSearchPlan:
@@ -135,3 +138,14 @@ class ResearchManager:
 
         self.printer.mark_item_done("writing")
         return result.final_output_as(ReportData)
+    
+    async def _generate_charts(self, search_results: list[str]) -> None:
+        self.printer.update_item("generating_charts", "Generating charts...")
+        input = f"Search results: {search_results} \nGenerate a pie chart of the market share of the top footwear companies."
+        result = await Runner.run(
+            chart_agent,
+            input,
+        )
+        print(f"Generated chart: {result.final_output}")
+        return result.final_output
+        
