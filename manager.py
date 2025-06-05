@@ -42,9 +42,10 @@ class ResearchManager:
             )
             search_plan = await self._plan_searches(query)
             search_results = await self._perform_searches(search_plan)
+            print("search_results", search_plan)
             report = await self._write_report(query, search_results)
-            if search_plan.need_chart:
-                chart_output_file = await self._generate_charts(search_results)
+            # if search_plan.need_chart:
+            #     chart_output_file = await self._generate_charts(search_results)
             
             print("report",report)
             # final_report = f"Report summary\n\n{report.short_summary}"

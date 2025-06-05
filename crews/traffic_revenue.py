@@ -5,71 +5,66 @@ from printer import Printer
 
 def generate_traffic_revenue_query(company_name, competitor_names, date_range, region):
     USER_QUERY = f"""
-    Generate three separate multi-line line charts to compare performance metrics between {company_name} and its competitors ({competitor_names}), using a time-series x-axis and extending each chart 3 periods beyond the specified date range.
+    # Prompt: Generate a Competitor Pricing Analysis Report
 
-    **Region of Analysis:** {region}  
-    **Time Period:** {date_range} (e.g., 2022–2024)  
-    **Forecast Extension:** 3 future periods beyond the end of {date_range}, following the same time granularity (e.g., monthly or yearly).
+    ## Objective
+    Produce a comprehensive pricing analysis report for the specified competitors, replicating the structure and visual presentation of the SG performance dashboard.
 
-    ---
+    ## Input Parameters
+    - Target Company: {company_name}
+    - Competitors: {competitor_names} (analyze each competitor individually)
+    - Region: {region}
+    - Time Period: {date_range}
 
-    ### 1. Revenue Chart (CompanyRevenue Time Series)
-    - **Data Source:** Use structured revenue data from the `CompetitorsRevenueData` model, where each record includes:
-    - `company_name`: Name of the company
-    - `revenue`: Total revenue
-    - `year`: The corresponding year of the record
-    - **Chart Type:** Multi-line line chart
-    - **X-Axis:** Time (from the start of {date_range} to 3 years beyond)
-    - **Y-Axis:** Revenue ($)
-    - **Lines:** One per company (`company_name`), with values from `revenue` field
-    - **Forecasts:** Forecast revenue for 3 additional years for each company using linear trends or available projections
-    - **Style:** Forecasted lines must appear visually distinct (e.g., dashed lines or lighter color tones)
+    ## Data Requirements
+    For each competitor, extract or estimate the following performance metrics at both the division and category levels:
 
-    ---
+    - Dimensions:
+    - Division: Footwear, Apparel, Equipment
+    - Category: e.g., Running, Basketball, Young Athletes
 
-    ### 2. Clickstream Chart
-    - **Metrics:** Total Visits, Unique Visitors, Bounce Rate (assumed available in similar structure to `CompanyRevenue`)
-    - **X-Axis:** Same time series used in Revenue Chart
-    - **One chart for each metric**, each using a multi-line line chart (one line per company)
-    - **Include:** Historical values, current year, and 3 future forecast periods
-    - **Visual Separation:** Forecasted segments should be dashed or styled differently
+    - Metrics:
+    - Actual Demand
+    - Demand Change (%) relative to previous year or baseline
+    - Units Sold
+    - Orders
+    - Buyers
+    - Pageviews
+    - Visitors
+    - AOV (Average Order Value in USD)
+    - AUR (Average Unit Retail in USD)
+    - ARPU (Average Revenue per User in USD)
+    - CR (B/V): Conversion Rate (Buyers / Visitors) in %
+    - CR (O/V): Conversion Rate (Orders / Visitors) in %
+    - % SOB: Share of Business in percentage points
 
-    ---
+    ## Visual Formatting Instructions
+    - Follow the SG dashboard layout structure and hierarchy.
+    - Apply conditional formatting:
+    - Use green for positive % changes and red for negative ones.
+    - Adjust color intensity to reflect magnitude (e.g., bright green for ≥ +30%, dark red for ≤ -50%).
+    - Ensure clean formatting with logical groupings and consistent order of metrics.
 
-    ### 3. Traffic Sources Chart
-    - **Metrics:** Direct Traffic, Referral Traffic, Organic Search Traffic
-    - **Structure:** Same as above
-    - **Include:** Full time series and forecasted periods
-    - **Company Lines:** Each metric has a separate chart with one line per company
+    ## Data Sources
+    Use a combination of publicly available and third-party intelligence sources, including:
+    - Retail and marketplace sites (e.g., Amazon, Shopee, Lazada, brand.com)
+    - Web analytics platforms (e.g., Similarweb, SEMrush)
+    - Pricing and inventory tracking tools (e.g., Profitero, DataWeave)
+    - Industry research (e.g., Statista, Euromonitor, NielsenIQ)
+    - Public company data and press releases
 
-    ---
+    ## Insights Summary
+    At the end of each competitor's section, include a concise bullet-point summary with 3–4 insights covering:
+    - Overall performance trends
+    - High- or low-performing divisions or categories
+    - Notable shifts in traffic, conversions, or pricing
+    - Market share movement or competitive repositioning
 
-    ### Chart Formatting Requirements
-    - Multi-line line charts with shared x-axis for time
-    - X-axis granularity must match time intervals in `year` field (typically yearly)
-    - All lines must be clearly labeled in the legend
-    - Include chart title, x/y-axis labels, and distinguish forecasted data
-    - Maintain consistent scaling across comparable charts
-
-    ---
-
-    ### Summary Table (Performance Overview)
-    - Format similar to Nike's sales table
-    - **Rows:** Countries (or markets) with optional sub-rows for categories (if available)
-    - **Columns:**
-    - Demand, Demand vs LY (%), Units, Orders, Buyers, Pageviews, Visitors
-    - AOV, AUR, ARPU, CR (B/V), CR (O/V), % Share of Business (pts)
-    - **Visual Cues:** Color-code positive growth (green) vs. negative growth (red)
-    - **Aggregation:** Include total and average rows per region and company
-    - **Footnotes:** Add concise footnotes summarizing trends, growth drivers, or anomalies
-
-    ---
-
-    ### Output Guidelines
-    - All charts and tables must be suitable for presentation in strategic business reports
-    - Label all elements clearly
-    - Avoid placeholder data—use real values provided in the input
-
+    ## Additional Instructions
+    - Repeat the structure above for each competitor in {competitor_names}.
+    - Use real numerical values wherever possible.
+    - Clearly indicate any estimated values and document the source or rationale for estimates.
+    - Format all numerical values consistently (e.g., percentages to two decimal places, currency in USD).
 
     """
     return USER_QUERY

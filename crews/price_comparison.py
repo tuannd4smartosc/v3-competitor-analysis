@@ -29,20 +29,16 @@ def generate_price_analysis_user_query(company_name, competitor_names, date_rang
     - Original Price (USD)
     - Discounted Price (USD)
     - Country
+    - Customer segment
 
     Repeat this table for each product segment.
 
-    2. Overall Price Comparison Summary
+    3. Overall Price Comparison Summary
     Include summary tables showing:
     - Average price per brand across all segments
     - Highest and lowest priced items per brand
     - Price spread (standard deviation) per brand
     - Country
-
-    3. Perceptual Map
-    - Create a visual perceptual map positioning {company_name} and {competitor_names}.
-    - Axes: X = Price, Y = Quality (or Innovation / Consumer Perception / Sales if more relevant).
-    - Include a table of the positioning values used to generate the map.
 
     Use as many tables as possible. Avoid paragraphs or extended text. Keep the report concise and data-rich.
 
