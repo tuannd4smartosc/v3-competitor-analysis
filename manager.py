@@ -42,10 +42,11 @@ class ResearchManager:
             )
             search_plan = await self._plan_searches(query)
             search_results = await self._perform_searches(search_plan)
-            # report = await self._write_report(query, search_results)
-            chart_output_file = await self._generate_charts(search_results)
+            report = await self._write_report(query, search_results)
+            if search_plan.need_chart:
+                chart_output_file = await self._generate_charts(search_results)
             
-            print("chart_output_file",chart_output_file)
+            print("report",report)
             # final_report = f"Report summary\n\n{report.short_summary}"
             # self.printer.update_item("final_report", final_report, is_done=True)
 
@@ -69,7 +70,7 @@ class ResearchManager:
         print("\n\n START SENDING EMAIL!")
         # send_email_with_attachment(subject, body, from_email, to_email, report.markdown_report, file_paths)
         print("\n\n SENT EMAIL SUCCESSFULLY!")
-
+        
     async def _plan_searches(self, query: str) -> WebSearchPlan:
         self.printer.update_item("planning", "Planning searches...")
         result = await Runner.run(

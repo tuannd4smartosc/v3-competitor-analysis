@@ -3,6 +3,9 @@ import os
 from datetime import datetime
 import asyncio
 from dotenv import load_dotenv
+from crews.price_comparison import run_pricing_analysis
+from crews.promotion_campaigns import run_promotion_campaigns_analysis
+from crews.traffic_revenue import run_traffic_revenue_analysis
 from manager import ResearchManager
 from config import REPORT_DIR
 from utils import show_confetti, markdown_to_pdf, get_pdf_download_link, sort_file_names
@@ -144,15 +147,12 @@ with col1:
             with st.spinner("Running analysis..."):
                 printer.update_item("research", "Starting research...", is_done=False)
                 try:
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    manager_id = f"{company_name}_ca_{date}_{region}"
-                    research_manager = ResearchManager(manager_id, printer)
-                    result = loop.run_until_complete(ResearchManager(manager_id, printer).run(query))
-                    printer.mark_item_done("research")
-                    report_filename = research_manager.file_name
-                    report_path = os.path.join(REPORT_DIR, report_filename)
-                    selected_report = report_path
+                    result = run_traffic_revenue_analysis(company_name, competitor_names, date, region, printer)
+                    print("result", result)
+                    # printer.mark_item_done("research")
+                    # report_filename = research_manager.file_name
+                    # report_path = os.path.join(REPORT_DIR, report_filename)
+                    # selected_report = report_path
                     printer.update_item("result", "Report generated successfully!", is_done=True)
                     st.success("Analysis complete! Check the reports list.")
                     show_confetti()

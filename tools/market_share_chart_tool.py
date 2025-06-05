@@ -10,8 +10,8 @@ class CompanyMarketShare(BaseModel):
     market_share: int
     """Market share percentage of the company."""
     
-    class Config:  # For Pydantic v1
-        extra = "forbid"  # Disallow extra fields
+    class Config:  
+        extra = "forbid"  
     
 class CompanyMarketSharesData(BaseModel):
     market_shares: list[CompanyMarketShare]
@@ -74,6 +74,6 @@ async def function_tool_generate_market_share_pie_chart(
 market_share_chart_tool = FunctionTool(
     name="generate_market_share_pie_chart",
     description="Generates a pie chart visualizing the market shares of different companies.",
-    on_invoke_tool=generate_market_share_pie_chart,
     params_json_schema=CompanyMarketSharesData.model_json_schema(),
+    on_invoke_tool=generate_market_share_pie_chart,
 )

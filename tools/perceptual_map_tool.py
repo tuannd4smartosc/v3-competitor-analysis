@@ -1,4 +1,6 @@
-from typing import List, Optional
+from typing import Any, List, Optional
+import uuid
+from agents import FunctionTool, RunContextWrapper
 from pydantic import BaseModel, Field
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -7,23 +9,42 @@ class Product(BaseModel):
     brand: str
     price: float
     rating: float
+    
+    class Config:  
+        extra = "forbid" 
 
 class BrandPosition(BaseModel):
     brand: str
     average_price: float
     average_rating: float
+    
+    class Config:  
+        extra = "forbid" 
 
 class BrandMovement(BaseModel):
     brand: str
     old_position: BrandPosition
     new_position: BrandPosition
+    
+    class Config:  
+        extra = "forbid" 
 
 class PerceptualMapData(BaseModel):
     products: List[Product]
     brand_positions: List[BrandPosition]
     movements: Optional[List[BrandMovement]] = Field(default=None)
+    
+    class Config:  
+        extra = "forbid" 
+    
+class ProductList(BaseModel):
+    products: list[Product]
+    
+    class Config:  
+        extra = "forbid" 
 
-def generate_perceptual_map(products: list[Product]):
+async def generate_perceptual_map(products_list: ProductList):
+    products = products_list.products
     df = pd.DataFrame([p.dict() for p in products])
     brand_avg_df = df.groupby('brand').agg({'price': 'mean', 'rating': 'mean'}).reset_index()
     brand_positions = [
@@ -73,17 +94,19 @@ def generate_perceptual_map(products: list[Product]):
     plt.grid(True, linestyle='--', alpha=0.4)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f"perceptual_map_{uuid.uuid4().hex}.png", dpi=300, bbox_inches='tight') 
+    
 
-products = [
-    Product(brand="Nike", price=120, rating=4.5),
-    Product(brand="Nike", price=90, rating=4.2),
-    Product(brand="Nike", price=130, rating=4.7),
-    Product(brand="Adidas", price=110, rating=4.0),
-    Product(brand="Adidas", price=95, rating=4.1),
-    Product(brand="Adidas", price=100, rating=4.3),
-    Product(brand="Puma", price=85, rating=4.0),
-    Product(brand="Reebok", price=75, rating=3.9),
-]
+async def function_tool_generate_perceptual_map(
+    ctx: RunContextWrapper[Any], args: str
+) -> str:
+    """Function tool used for generating perceptual map for pricing comparisons"""
+    products_list = ProductList.model_validate_json(args)
+    return await generate_perceptual_map(products_list)
 
-generate_perceptual_map(products)
+perceptual_map_tool = FunctionTool(
+    name="generate_perceptual_map",
+    description="Generates a perceptual map visualizing pricing comparisons across competitors versus metrics such as Quality / Customer rating / Revenue.",
+    params_json_schema=ProductList.model_json_schema(),
+    on_invoke_tool=function_tool_generate_perceptual_map,
+)

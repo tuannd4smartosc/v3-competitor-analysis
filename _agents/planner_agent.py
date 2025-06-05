@@ -45,6 +45,9 @@ class WebSearchItem(BaseModel):
 class WebSearchPlan(BaseModel):
     searches: list[WebSearchItem]
     """A list of web searches to perform to best answer the query."""
+    
+    need_chart: bool
+    """Return true if a chart or a perceptual map is required for the report"""
 
 
 planner_agent = Agent(
