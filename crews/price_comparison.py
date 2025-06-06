@@ -15,7 +15,7 @@ def generate_price_analysis_user_query(company_name, competitor_names, date_rang
 
     1. Product Segment Analysis
     For each product segment (e.g., Footwear, Apparel, Accessories, Equipment):
-    - Include at least 10 products per brand.
+    - Include at least 5 products per brand.
     - Group products by brand and rank them by popularity or relevance.
     - Present the following columns in a table:
     - Brand

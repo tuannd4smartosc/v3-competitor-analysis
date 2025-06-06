@@ -1,4 +1,5 @@
 import re
+import shutil
 import streamlit as st
 from markdown import markdown
 import json
@@ -24,6 +25,10 @@ def markdown_to_pdf(markdown_text, output_path):
                 line-height: 1.6;
                 font-size: 12pt;
                 background: white;
+            }}
+            
+            img {{
+                max-width: 100%;
             }}
 
             h1, h2, h3, h4 {{
@@ -119,7 +124,7 @@ def markdown_to_pdf(markdown_text, output_path):
     </html>
     """
     print(">>>>>>>>>>>>>>> styled_html",styled_html)
-    HTML(string=styled_html).write_pdf(output_path)
+    HTML(string=styled_html, base_url=os.getcwd() ).write_pdf(output_path)
 
 def get_pdf_download_link(pdf_path, filename):
     with open(pdf_path, "rb") as f:
@@ -140,3 +145,25 @@ def extract_timestamp(filename):
 def sort_file_names(file_names: list[str]):
     sorted_files = sorted(file_names, key=extract_timestamp, reverse=True)
     return sorted_files
+
+def get_first_temp_filename(folder_path: str):
+
+    files = sorted(f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)))
+
+    if files:
+        first_file = files[0]
+        return first_file
+    else:
+        print("The folder is empty.")
+        return None
+    
+def empty_folder(folder_path: str):
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.remove(file_path)  # Delete file or symbolic link
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Delete folder and its contents
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
