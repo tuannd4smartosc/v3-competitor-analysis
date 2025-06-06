@@ -1,79 +1,68 @@
-import asyncio
-from manager import ResearchManager
-from printer import Printer
-
 
 def generate_traffic_revenue_query(company_name, competitor_names, date_range, region):
     USER_QUERY = f"""
-    # Prompt: Generate a Competitor Pricing Analysis Report
-
-    ## Objective
-    Produce a comprehensive pricing analysis report for the specified competitors, replicating the structure and visual presentation of the SG performance dashboard.
-
-    ## Input Parameters
-    - Target Company: {company_name}
-    - Competitors: {competitor_names} (analyze each competitor individually)
-    - Region: {region}
-    - Time Period: {date_range}
-
-    ## Data Requirements
-    For each competitor, extract or estimate the following performance metrics at both the division and category levels:
-
-    - Dimensions:
-    - Division: Footwear, Apparel, Equipment
-    - Category: e.g., Running, Basketball, Young Athletes
-
-    - Metrics:
-    - Actual Demand
-    - Demand Change (%) relative to previous year or baseline
-    - Units Sold
-    - Orders
-    - Buyers
-    - Pageviews
-    - Visitors
-    - AOV (Average Order Value in USD)
-    - AUR (Average Unit Retail in USD)
-    - ARPU (Average Revenue per User in USD)
-    - CR (B/V): Conversion Rate (Buyers / Visitors) in %
-    - CR (O/V): Conversion Rate (Orders / Visitors) in %
-    - % SOB: Share of Business in percentage points
-
-    ## Visual Formatting Instructions
-    - Follow the SG dashboard layout structure and hierarchy.
-    - Apply conditional formatting:
-    - Use green for positive % changes and red for negative ones.
-    - Adjust color intensity to reflect magnitude (e.g., bright green for ≥ +30%, dark red for ≤ -50%).
-    - Ensure clean formatting with logical groupings and consistent order of metrics.
-
-    ## Data Sources
-    Use a combination of publicly available and third-party intelligence sources, including:
-    - Retail and marketplace sites (e.g., Amazon, Shopee, Lazada, brand.com)
-    - Web analytics platforms (e.g., Similarweb, SEMrush)
-    - Pricing and inventory tracking tools (e.g., Profitero, DataWeave)
-    - Industry research (e.g., Statista, Euromonitor, NielsenIQ)
-    - Public company data and press releases
-
-    ## Insights Summary
-    At the end of each competitor's section, include a concise bullet-point summary with 3–4 insights covering:
-    - Overall performance trends
-    - High- or low-performing divisions or categories
-    - Notable shifts in traffic, conversions, or pricing
-    - Market share movement or competitive repositioning
-
-    ## Additional Instructions
-    - Repeat the structure above for each competitor in {competitor_names}.
-    - Use real numerical values wherever possible.
-    - Clearly indicate any estimated values and document the source or rationale for estimates.
-    - Format all numerical values consistently (e.g., percentages to two decimal places, currency in USD).
-
+    "prompt_title": "Generate a Competitor Traffic & Revenue Performance Analysis Report with Visual Tables",
+    "objective": (
+        "Produce a comprehensive report analyzing traffic and revenue performance for the specified competitors, "
+        "mirroring the structure and visual presentation of the SG performance dashboard using visual tables "
+        "at both division and category levels."
+    ),
+    "input_parameters": {{
+        "target_company": "{company_name}",
+        "competitors": "{competitor_names}",
+        "region": "{region}",
+        "time_period": "{date_range}"
+    }},
+    "data_requirements": {{
+        "dimensions": {{
+            "division": ["Footwear", "Apparel", "Equipment"],
+            "category": ["Running", "Basketball", "Young Athletes"]
+        }},
+        "metrics": [
+            "Actual Revenue (USD)",
+            "Revenue Growth (%) vs. previous year or baseline",
+            "Pageviews",
+            "Visitors",
+            "Buyers",
+            "Orders",
+            "Units Sold",
+            "AOV (Average Order Value in USD)",
+            "AUR (Average Unit Retail in USD)",
+            "ARPU (Average Revenue per User in USD)",
+            "CR (B/V): Conversion Rate (Buyers / Visitors) in %",
+            "CR (O/V): Conversion Rate (Orders / Visitors) in %",
+            "% SOB: Share of Business (revenue-based)"
+        ]
+    }},
+    "visual_output_instructions": {{
+        "tables_per_competitor": [
+            "Division-level summary table with traffic and revenue KPIs",
+            "Category-level breakdown table",
+            "YoY % change summary table with color-coded formatting",
+            "Traffic vs. Revenue correlation table",
+            "Revenue Share by Division and Category"
+        ]
+    }},
+    "data_sources": [
+        "Web analytics platforms (e.g., Similarweb, SEMrush)",
+        "Retail & marketplace data (e.g., Shopee, Lazada, Amazon, brand.com)",
+        "Industry reports (e.g., Statista, Euromonitor, NielsenIQ)",
+        "Third-party data aggregators (e.g., DataWeave, Profitero)",
+        "Publicly disclosed financials and press releases"
+    ],
+    "insights_summary": {{
+        "instructions": "At the end of each competitor’s section, summarize 3–4 insights focused on traffic and revenue trends.",
+        "insight_types": [
+            "Total traffic and buyer volume trends",
+            "High- or low-performing divisions/categories by revenue",
+            "Shifts in conversion performance",
+            "Notable changes in revenue share vs. prior period"
+        ]
+    }},
+    "additional_instructions": [
+        "Repeat the analysis structure for each competitor in {competitor_names}.",
+        "Use real or estimated values and label estimates clearly.",
+        "Maintain consistent numeric formatting (USD values, percentages to 2 decimal places)."
+    ]
     """
     return USER_QUERY
-
-def run_traffic_revenue_analysis(company_name, competitor_names, date_range, region, printer):
-    manager_id = f"revenue_{company_name}_{date_range}_{region}"
-    user_prompt = generate_traffic_revenue_query(company_name, competitor_names, date_range, region)
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    research_manager = ResearchManager(manager_id, printer)
-    result = loop.run_until_complete(research_manager.run(user_prompt))
-    return result

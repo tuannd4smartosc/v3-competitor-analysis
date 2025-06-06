@@ -3,16 +3,12 @@ import os
 from datetime import datetime
 import asyncio
 from dotenv import load_dotenv
-from crews.price_comparison import run_pricing_analysis
-from crews.promotion_campaigns import run_promotion_campaigns_analysis
-from crews.traffic_revenue import run_traffic_revenue_analysis
-from manager import ResearchManager
+from manager import AiManager
 from config import REPORT_DIR
-from utils import show_confetti, markdown_to_pdf, get_pdf_download_link, sort_file_names
+from utils import show_confetti, get_pdf_download_link, sort_file_names
 from user_prompt import generate_prompt
 from st_printer import Printer
 import datetime
-from streamlit_tags import st_tags
 
 load_dotenv()
 
@@ -147,7 +143,10 @@ with col1:
             with st.spinner("Running analysis..."):
                 printer.update_item("research", "Starting research...", is_done=False)
                 try:
-                    result = run_traffic_revenue_analysis(company_name, competitor_names, date, region, printer)
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    research_manager = AiManager(company_name, competitor_names, date, region)
+                    result = loop.run_until_complete(research_manager.run_crews())
                     print("result", result)
                     # printer.mark_item_done("research")
                     # report_filename = research_manager.file_name
@@ -163,10 +162,10 @@ with col1:
         else:
             st.warning("Please fill in all fields!")
 
-with col2:
-    if selected_report and selected_report != "No reports match your filters":
-        pdf_path = os.path.join(REPORT_DIR, selected_report.replace(".md", ".pdf"))
-        get_pdf_download_link(pdf_path, selected_report.replace(".md", ".pdf"))
+# with col2:
+#     if selected_report and selected_report != "No reports match your filters":
+#         pdf_path = os.path.join(REPORT_DIR, selected_report.replace(".md", ".pdf"))
+#         get_pdf_download_link(pdf_path, selected_report.replace(".md", ".pdf"))
 
  
 if selected_report and selected_report != "No reports match your filters":

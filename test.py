@@ -15,6 +15,7 @@ data = [
     ["Skechers", "Go Walk 5", 80, 75],
     ["Nike", "Pegasus 38", 120, 100],
     ["Adidas", "Stan Smith", 100, 90],
+     ["Puma", "test", 222, 98],
 ]
 
 # Convert to DataFrame

@@ -27,7 +27,7 @@ When formulating the searches, do the following:
    - Using advanced search operators where applicable (e.g., quotes, filetype, intitle, inurl)
    - Filtering by **relevance, recency**, or **depth** (e.g., “2024 report”, “long-form article”, “step-by-step guide”)
 
-Your output must be a **list of at least 40 specific search queries** (more if needed), covering different angles of the topic and addressing potential nuances, related concepts, and edge cases. **Err on the side of over-coverage rather than omission.**
+Your output must be a **list of at least 20 specific search queries** (more if needed), covering different angles of the topic and addressing potential nuances, related concepts, and edge cases. **Err on the side of over-coverage rather than omission.**
 
 The searches should maximize the chance of retrieving **rich, credible, and multifaceted information**, suitable for use in decision-making, research, or in-depth reporting.
 """

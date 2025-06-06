@@ -1,8 +1,3 @@
-import asyncio
-from manager import ResearchManager
-from printer import Printer
-
-
 def generate_price_analysis_user_query(company_name, competitor_names, date_range, region):
     USER_QUERY = f"""
     Write a data-driven price comparison analysis report section for the sportswear industry, focusing on:
@@ -44,12 +39,3 @@ def generate_price_analysis_user_query(company_name, competitor_names, date_rang
 
     """
     return USER_QUERY
-
-def run_pricing_analysis(company_name, competitor_names, date_range, region, printer):
-    manager_id = f"price_{company_name}_ca_{date_range}_{region}"
-    user_prompt = generate_price_analysis_user_query(company_name, competitor_names, date_range, region)
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    research_manager = ResearchManager(manager_id, printer)
-    result = loop.run_until_complete(research_manager.run(user_prompt))
-    return result

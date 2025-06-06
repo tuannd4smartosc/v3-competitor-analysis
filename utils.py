@@ -118,7 +118,7 @@ def markdown_to_pdf(markdown_text, output_path):
     </body>
     </html>
     """
-    
+    print(">>>>>>>>>>>>>>> styled_html",styled_html)
     HTML(string=styled_html).write_pdf(output_path)
 
 def get_pdf_download_link(pdf_path, filename):
