@@ -80,6 +80,6 @@ class ReportSectionData(BaseModel):
 writer_agent = Agent(
     name="WriterAgent",
     instructions=PROMPT,
-    model="gpt-4o-mini",
+    model="o1",
     output_type=ReportSectionData,
 )

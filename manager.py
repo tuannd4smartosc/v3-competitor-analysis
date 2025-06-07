@@ -1,18 +1,21 @@
 import asyncio
+import itertools
+import os
 import time
 import uuid
 
 from agents import Runner, custom_span, gen_trace_id, trace
 from openai import BaseModel
 from _agents.planner import WebSearchItem, WebSearchPlan, planner_agent
-from _agents.search import search_agent
+from _agents.search import search_agent, SearchResult, APAWebReference
 from _agents.writer import ReportSectionData, writer_agent
 from _agents.chart import ChartOutput, chart_agent
+from config import REPORT_DIR
 from crews.price_comparison import generate_price_analysis_user_query
 from crews.promotion_campaigns import generate_promotion_campaign_user_query
 from crews.traffic_revenue import generate_traffic_revenue_query
 from file_handler import export_md
-from utils import get_first_temp_filename
+from utils import generate_citation_markdown, get_first_temp_filename, get_latest_file, markdown_to_pdf
 
 topics = {
     "promotion_campaigns": "Promotion campaigns",
@@ -28,6 +31,11 @@ class SectionOutputData(BaseModel):
     markdown_text: str
     chart_data: ChartOutput | None
     section_title: str
+    reference_list: list[APAWebReference]
+    
+class FinalOutputData(BaseModel):
+    full_report: str
+    file_name: str
 
 class AiManager:
     def __init__(self, company_name, competitors_names, date_range, region):
@@ -38,6 +46,7 @@ class AiManager:
         
     async def run_crews(self):
         params = [self.company_name, self.competitors_names, self.date_range, self.region]
+        print("params", params)
         section_requests = [
             SectionRequest(
                 topic=topics["promotion_campaigns"],
@@ -61,16 +70,29 @@ class AiManager:
         tasks = [self.generate_section(section_req.topic, section_req.user_prompt) for section_req in section_requests]
         print("tasks",tasks)
         section_outputs = await asyncio.gather(*tasks)
+        report_title = f"Competitor Analysis Report: {self.company_name} vs {self.competitors_names} in ({self.region}, {self.date_range})"
+        print("report_title",report_title)
         full_report = ""
+        full_report += f"# {report_title}\n\n"
+        references = []
+        print("number of sections:", len(section_outputs))
         for section in section_outputs:
             full_report += "\n\n" + f"##{section.section_title}" + "\n\n" + section.markdown_text
             if(section.chart_data):
-                chart_filename = get_first_temp_filename("temp")
+                chart_filename = get_latest_file("temp")
                 print("chart_filename", chart_filename)
-                full_report += "\n\n" + f"![Chart](temp/{chart_filename})" + "\n" + f"*{section.chart_data.chart_description}*"
-        print("<<<<<<<< full_report", full_report)
-        export_md(full_report, "test-report.md")
-        return section_outputs
+                full_report += "\n\n" + f"![Chart]({chart_filename})" + "\n" + f"*{section.chart_data.chart_description}*"
+                references = references + section.reference_list
+        citation_markdown = generate_citation_markdown(references)
+        full_report += "\n\n" + "## References" + "\n\n" + citation_markdown
+        file_name = f"{self.generate_report_id()}.md"
+        export_md(full_report, file_name)
+        pdf_path = os.path.join(REPORT_DIR, file_name.replace(".md", ".pdf"))
+        markdown_to_pdf(full_report, pdf_path)
+        return FinalOutputData(
+            full_report=full_report,
+            file_name=file_name
+        )
         
         
     async def generate_section(self, topic: str, query: str) -> SectionOutputData:
@@ -82,8 +104,11 @@ class AiManager:
 
                 search_results = await self._perform_searches(search_plan)
                 print("search_results completed!")
-
-                section = await self._write_section(query, search_results)
+                
+                search_results_texts = [item.search_result for item in search_results]
+                reference_list = list(itertools.chain.from_iterable([item.reference_list for item in search_results]))
+                
+                section = await self._write_section(query, search_results_texts)
                 
                 chart_data = None
                 print("topic", topic, topics["pricing_analysis"], topic == topics["pricing_analysis"])
@@ -92,18 +117,18 @@ class AiManager:
                     chart_data = await self._generate_charts(search_results)
                     print(">>>>>>>>>. chart_data", chart_data)
                 
-                
                 return SectionOutputData(
                     markdown_text=section.markdown_report,
                     chart_data=chart_data,
                     section_title=section.section_title,
+                    reference_list=reference_list
                 )
             except Exception as e:
                 print(f"generate_section failed for query={query}: {e}")
                 return None
         
     def generate_report_id(self):
-        return f"report-{self.competitors_name}-{self.region}-{self.date_range}-{uuid.uuid4().hex}"
+        return f"report-{self.competitors_names}-{self.region}-{self.date_range}-{uuid.uuid4().hex}"
     
     async def _plan_searches(self, query: str) -> WebSearchPlan:
         result = await Runner.run(
@@ -112,7 +137,7 @@ class AiManager:
         )
         return result.final_output_as(WebSearchPlan)
 
-    async def _perform_searches(self, search_plan: WebSearchPlan) -> list[str]:
+    async def _perform_searches(self, search_plan: WebSearchPlan) -> list[SearchResult]:
         with custom_span("Search the web"):
             num_completed = 0
             tasks = [asyncio.create_task(self._search(item)) for item in search_plan.searches]
@@ -124,14 +149,14 @@ class AiManager:
                 num_completed += 1
             return results
 
-    async def _search(self, item: WebSearchItem) -> str | None:
+    async def _search(self, item: WebSearchItem) -> SearchResult | None:
         input = f"Search term: {item.query}\nReason for searching: {item.reason}"
         try:
             result = await Runner.run(
                 search_agent,
                 input,
             )
-            return str(result.final_output)
+            return result.final_output_as(SearchResult)
         except Exception:
             return None
 

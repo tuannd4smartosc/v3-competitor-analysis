@@ -1,5 +1,8 @@
+from datetime import date
+from typing import List, Optional
 from agents import Agent, WebSearchTool
 from agents.model_settings import ModelSettings
+from pydantic import BaseModel, Field, HttpUrl
 
 INSTRUCTIONS = (
    """
@@ -86,7 +89,8 @@ INSTRUCTIONS = (
         "Bar Chart Readiness: Ensure consistent metric units across competitors.",
         "Pie Chart Readiness: Include sums and part-to-whole values (e.g., total market vs. brand share).",
         "Distributions & Outliers: Include min, max, average, and standard deviation where applicable.",
-        "All data must include a source name, publication year, and exact citation URL if available."
+        "All data must include a source name, publication year, and exact citation URL if available.",
+        "Output must include a field named `reference_list`, which is a list of APAWebReference objects representing sources used to produce the data."
       ]
     },
     {
@@ -110,10 +114,37 @@ INSTRUCTIONS = (
 """
 )
 
+class APAWebReference(BaseModel):
+    author: Optional[str]
+    """Author(s) of the web page, if available."""
+    
+    year: Optional[int]
+    """Year of publication or last update of the web page."""
+    
+    title: str
+    """Title of the web page."""
+    
+    website_name: Optional[str]
+    """Name of the website or organization hosting the web page."""
+    
+    url: str
+    """URL of the web page."""
+    
+    access_date: Optional[date]
+    """Date when the web page was last accessed, if applicable."""
+
+class SearchResult(BaseModel):
+  search_result: str
+  """The result of the search query, which should be a structured dataset, reliable facts or a detailed statistic relevant to the competitor analysis."""
+  
+  reference_list: list[APAWebReference]
+  """A list of references used to support the search result in APA format."""
+
 
 search_agent = Agent(
     name="Search agent",
     instructions=INSTRUCTIONS,
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
+    output_type=SearchResult,
 )

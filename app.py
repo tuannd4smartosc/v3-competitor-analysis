@@ -145,13 +145,16 @@ with col1:
                 try:
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
-                    research_manager = AiManager(company_name, competitor_names, date, region)
-                    result = loop.run_until_complete(research_manager.run_crews())
-                    print("result", result)
-                    # printer.mark_item_done("research")
-                    # report_filename = research_manager.file_name
-                    # report_path = os.path.join(REPORT_DIR, report_filename)
-                    # selected_report = report_path
+                    start_date, end_date = date
+                    date_range = f"{start_date.strftime('%B %d, %Y')} to {end_date.strftime('%B %d, %Y')}"
+                    research_manager = AiManager(company_name, ', '.join(competitor_names), date_range, region)
+                    output = loop.run_until_complete(research_manager.run_crews())
+                    print("result", output)
+                    result = output.full_report
+                    report_filename = output.file_name
+                    printer.mark_item_done("research")
+                    report_path = os.path.join(REPORT_DIR, report_filename)
+                    selected_report = report_path
                     printer.update_item("result", "Report generated successfully!", is_done=True)
                     st.success("Analysis complete! Check the reports list.")
                     show_confetti()
@@ -162,15 +165,18 @@ with col1:
         else:
             st.warning("Please fill in all fields!")
 
-# with col2:
-#     if selected_report and selected_report != "No reports match your filters":
-#         pdf_path = os.path.join(REPORT_DIR, selected_report.replace(".md", ".pdf"))
-#         get_pdf_download_link(pdf_path, selected_report.replace(".md", ".pdf"))
+with col2:
+    print("selected_report",selected_report)
+    if selected_report and selected_report != "No reports match your filters":
+        pdf_path = os.path.join(REPORT_DIR, selected_report.replace(".md", ".pdf"))
+        print("pdf_path",pdf_path)
+        get_pdf_download_link(pdf_path, selected_report.replace(".md", ".pdf"))
 
  
 if selected_report and selected_report != "No reports match your filters":
     with open(os.path.join(REPORT_DIR, selected_report), "r") as f:
         report_content = f.read()
+    report_content = report_content.replace("![Chart](temp/", "*Please download PDF file to view the chart*  ---> ![Chart](temp/")
     st.divider()
     st.markdown(report_content, unsafe_allow_html=True)
 elif selected_report == "No reports match your filters":

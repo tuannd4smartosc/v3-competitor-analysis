@@ -1,3 +1,4 @@
+import glob
 import re
 import shutil
 import streamlit as st
@@ -5,6 +6,8 @@ from markdown import markdown
 import json
 import os
 from weasyprint import HTML
+
+from _agents.search import APAWebReference
 
 def show_confetti():
     st.balloons()
@@ -212,7 +215,14 @@ def get_first_temp_filename(folder_path: str):
     else:
         print("The folder is empty.")
         return None
-    
+
+def get_latest_file(folder_path):
+    files = glob.glob(os.path.join(folder_path, '*'))  # All files
+    if not files:
+        return None
+    latest_file = max(files, key=os.path.getmtime)
+    return latest_file    
+
 def empty_folder(folder_path: str):
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
@@ -223,3 +233,19 @@ def empty_folder(folder_path: str):
                 shutil.rmtree(file_path)  # Delete folder and its contents
         except Exception as e:
             print(f'Failed to delete {file_path}. Reason: {e}')
+            
+def format_apa_citation(ref: APAWebReference) -> str:
+    # Format the author
+    author = ref.author if ref.author else ref.website_name
+    # Format the year
+    year = f"({ref.year})" if ref.year else "(n.d.)"
+    # Format access date
+    access_str = f"Accessed {ref.access_date.strftime('%B %d, %Y')}." if ref.access_date else ""
+    # Combine into APA format
+    citation = f"{author}. {year}. *{ref.title}*. {ref.website_name}. {access_str} [https://{ref.url.lstrip('https://')}]"
+    return citation
+
+def generate_citation_markdown(reference_list: list[APAWebReference]) -> str:
+    citations = [format_apa_citation(ref) for ref in reference_list]
+    markdown_text = "\n\n".join(citations)
+    return markdown_text

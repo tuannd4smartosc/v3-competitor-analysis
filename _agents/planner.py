@@ -48,8 +48,7 @@ class WebSearchPlan(BaseModel):
     
     need_chart: bool
     """Return true if a chart or a perceptual map is required for the report"""
-
-
+    
 planner_agent = Agent(
     name="PlannerAgent",
     instructions=PROMPT,
