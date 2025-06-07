@@ -62,11 +62,11 @@ class AiManager:
         section_outputs = await asyncio.gather(*tasks)
         full_report = ""
         for section in section_outputs:
-            full_report = full_report + "\n\n" + section.markdown_text
+            full_report += "\n\n" + section.markdown_text
             if(section.chart_data):
                 chart_filename = get_first_temp_filename("temp")
                 print("chart_filename", chart_filename)
-                full_report += full_report + "\n\n" + f"![Chart](temp/{chart_filename})" + "\n" + f"*{section.chart_data.chart_description}*"
+                full_report += "\n\n" + f"![Chart](temp/{chart_filename})" + "\n" + f"*{section.chart_data.chart_description}*"
         print("<<<<<<<< full_report", full_report)
         export_md(full_report, "test-report.md")
         return section_outputs

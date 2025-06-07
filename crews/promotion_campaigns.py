@@ -54,17 +54,6 @@ def generate_promotion_campaign_user_query(company_name, competitor_names, date_
 
     ---
 
-    ### **3. Data Visualization Requirements**
-
-    Add clear data visualization placeholders:
-
-    - **Campaign Comparison Table**: By country and company
-    - **Channel Effectiveness Table**: Reach and CTR per marketing channel
-    - **Pricing Strategy Table**: Original vs. discount/bundle pricing
-    - **Performance Metrics Table**: Side-by-side KPI summary
-
-    ---
-
     ### **Formatting Guidelines**
 
     - Use **markdown headings**, **bullet points**, and **tables** to improve readability
