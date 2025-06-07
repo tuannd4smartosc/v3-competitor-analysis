@@ -68,7 +68,7 @@ PROMPT = (
 chart_agent = Agent(
     name="ChartAgent",
     instructions=PROMPT,
-    model="o1",
+    model="gpt-4o-mini",
     tools=[heat_map_tool],
     output_type=ChartOutput,
 )

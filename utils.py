@@ -14,8 +14,8 @@ def generate_title_from_markdown(markdown_text):
     if match:
         title = match.group(1).strip()
         markdown_text = markdown_text.replace(match.group(0), '', 1).lstrip()
-        return title
-    return "Untitled Report", markdown_text
+        return title, markdown_text
+    return "Nike Competitor Analysis", markdown_text
 
 
 def generate_toc_from_markdown(markdown_text):
@@ -50,7 +50,7 @@ def generate_toc_from_markdown(markdown_text):
 
 def markdown_to_pdf(markdown_text, output_path):
     toc_html, updated_markdown = generate_toc_from_markdown(markdown_text)
-    title_html = generate_title_from_markdown(markdown_text)
+    title_html, md_text = generate_title_from_markdown(markdown_text)
 
     html_text = markdown(updated_markdown + "\n\n", extensions=['markdown.extensions.tables', 'markdown.extensions.extra', 'markdown.extensions.nl2br'])
     styled_html = f"""

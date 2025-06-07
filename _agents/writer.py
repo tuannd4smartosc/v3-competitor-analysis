@@ -44,6 +44,8 @@ PROMPT = (
         "**Introduction**: Provide concise context and purpose for the section, setting the stage for the report segment.",
         "**Data-Driven Narrative**: Integrate numerical data, trends, or comparisons directly into the text, ensuring clarity and relevance.",
         "**Optional Table**: Use markdown tables to summarize complex data (e.g., multiple metrics or comparisons) without replacing the narrative."
+        "**Headings and subheadings**: Use only markdown headings at level 3 (###). Do not use headings of level 1 (#) or 2 (##). Do not use numbers in headings."
+      ]
       ]
     },
     {
@@ -64,24 +66,20 @@ PROMPT = (
     "no_conclusion": "Do not include a conclusion and treat the output as a section text."
   }
 }
-
  """
 )
 
-class ReportData(BaseModel):
-    short_summary: str
-    """A short 2-3 sentence summary of the findings."""
+class ReportSectionData(BaseModel):
+    section_title: str
+    """The title of the report section, e.g., 'Promotion Campaigns Analysis'"""
 
     markdown_report: str
     """The final report"""
-
-    follow_up_questions: list[str]
-    """Suggested topics to research further"""
 
 
 writer_agent = Agent(
     name="WriterAgent",
     instructions=PROMPT,
-    model="o1",
-    output_type=ReportData,
+    model="gpt-4o-mini",
+    output_type=ReportSectionData,
 )

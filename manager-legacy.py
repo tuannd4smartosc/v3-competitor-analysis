@@ -8,7 +8,7 @@ from agents import Runner, custom_span, gen_trace_id, trace
 from _agents.chart import chart_agent
 from _agents.planner import WebSearchItem, WebSearchPlan, planner_agent
 from _agents.search import search_agent
-from _agents.writer import ReportData, writer_agent
+from _agents.writer import ReportSectionData, writer_agent
 from printer import Printer
 from file_handler import export_md
 from datetime import datetime
@@ -112,7 +112,7 @@ class ResearchManager:
         except Exception:
             return None
 
-    async def _write_report(self, query: str, search_results: list[str]) -> ReportData:
+    async def _write_report(self, query: str, search_results: list[str]) -> ReportSectionData:
         self.printer.update_item("writing", "\nThinking about report...\nThis could take a few minutes.\n")
         input = f"Original query: {query}\nSummarized search results: {search_results}"
         result = Runner.run_streamed(
@@ -138,7 +138,7 @@ class ResearchManager:
                 last_update = time.time()
 
         self.printer.mark_item_done("writing")
-        return result.final_output_as(ReportData)
+        return result.final_output_as(ReportSectionData)
     
     async def _generate_charts(self, search_results: list[str]) -> None:
         self.printer.update_item("generating_charts", "Generating charts...")

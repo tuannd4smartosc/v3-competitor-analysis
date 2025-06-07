@@ -6,7 +6,7 @@ from agents import Runner, custom_span, gen_trace_id, trace
 from openai import BaseModel
 from _agents.planner import WebSearchItem, WebSearchPlan, planner_agent
 from _agents.search import search_agent
-from _agents.writer import ReportData, writer_agent
+from _agents.writer import ReportSectionData, writer_agent
 from _agents.chart import ChartOutput, chart_agent
 from crews.price_comparison import generate_price_analysis_user_query
 from crews.promotion_campaigns import generate_promotion_campaign_user_query
@@ -27,6 +27,7 @@ class SectionRequest(BaseModel):
 class SectionOutputData(BaseModel):
     markdown_text: str
     chart_data: ChartOutput | None
+    section_title: str
 
 class AiManager:
     def __init__(self, company_name, competitors_names, date_range, region):
@@ -62,7 +63,7 @@ class AiManager:
         section_outputs = await asyncio.gather(*tasks)
         full_report = ""
         for section in section_outputs:
-            full_report += "\n\n" + section.markdown_text
+            full_report += "\n\n" + f"##{section.section_title}" + "\n\n" + section.markdown_text
             if(section.chart_data):
                 chart_filename = get_first_temp_filename("temp")
                 print("chart_filename", chart_filename)
@@ -94,7 +95,8 @@ class AiManager:
                 
                 return SectionOutputData(
                     markdown_text=section.markdown_report,
-                    chart_data=chart_data
+                    chart_data=chart_data,
+                    section_title=section.section_title,
                 )
             except Exception as e:
                 print(f"generate_section failed for query={query}: {e}")
@@ -133,13 +135,13 @@ class AiManager:
         except Exception:
             return None
 
-    async def _write_section(self, query: str, search_results: list[str]) -> ReportData:
+    async def _write_section(self, query: str, search_results: list[str]) -> ReportSectionData:
         input = f"Original query: {query}\nSummarized search results: {search_results}"
         result = await Runner.run(
             writer_agent,
             input,
         )
-        return result.final_output_as(ReportData)
+        return result.final_output_as(ReportSectionData)
     
     async def _generate_charts(self, search_results: list[str]) -> ChartOutput:
         input = f"""

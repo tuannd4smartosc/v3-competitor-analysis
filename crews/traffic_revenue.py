@@ -41,6 +41,11 @@ def generate_traffic_revenue_query(company_name, competitor_names, date_range, r
             "YoY % change summary table with color-coded formatting",
             "Traffic vs. Revenue correlation table",
             "Revenue Share by Division and Category"
+        ],
+        "table_formatting_rules": [
+            "Each table should display a maximum of 5 columns.",
+            "If a table requires more than 5 metrics, split the content into multiple tables, each clearly labeled as part 1, part 2, etc.",
+            "Ensure tables fit within the report layout without horizontal scrolling or overflow."
         ]
     }},
     "data_sources": [
@@ -65,4 +70,5 @@ def generate_traffic_revenue_query(company_name, competitor_names, date_range, r
         "Maintain consistent numeric formatting (USD values, percentages to 2 decimal places)."
     ]
     """
+
     return USER_QUERY
