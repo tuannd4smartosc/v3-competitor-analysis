@@ -1,65 +1,61 @@
 
 def generate_promotion_campaign_user_query(company_name, competitor_names, date_range, region):
     USER_QUERY = f"""
-    **Prompt: Competitor Analysis Report Generation**
+    List all **promotion campaigns**, **marketing activations**, and **noteworthy public campaigns or events** related to **{company_name}** and its competitors, **{competitor_names}**, that occurred within the date range **{date_range}**, specifically in **{region}**.
 
-    Please generate a **comprehensive competitor analysis report section** for **{company_name}** and its key competitors: **{competitor_names}**, focused on the **{region}** market during the period **{date_range}**.
+    Include all types of relevant activity:
 
-    The section must follow a **professional structure** and contain detailed, data-driven content. Organize all insights by company and country. Use clear markdown formatting with headings, bullet points, and comparison tables. Prioritize readability and strategic depth.
+    - **Product launches** (e.g., new SKUs, special editions, limited drops)
+    - **Discount or voucher campaigns** (e.g., seasonal sales, app-only codes, bundle offers)
+    - **Brand collaborations** (e.g., with celebrities, influencers, designers, or other brands)
+    - **Region-specific marketing events** (e.g., in-store activations, pop-ups, mobile app campaigns)
+    - **Digital/social campaigns** (e.g., hashtag drives, platform-specific promotions, gamified rewards)
+    - **Public controversies or advocacy events** (e.g., backlash, labor protests, DEI statements, environmental campaigns)  
+    - **Loyalty program campaigns** or promotions available only to members or app users
 
-    ---
-
-    ### **1. Executive Summary**
-
-    Provide a concise overview that includes:
-
-    - The most important findings from the competitive analysis.
-    - Key takeaways and **strategic implications** for **{company_name}**, based on how it compares to its competitors.
-
-    ---
-
-    ### **2. Deep Dive: Promotional Campaigns Analysis**
-
-    For each company, present a detailed breakdown of **promotional campaigns**, organized **by country** within the region.
-
-    Include the following campaign attributes:
-
-    - **Campaign Name** and brief **Description**
-    - **Geographic Coverage**: Countries targeted within {region}
-    - **Campaign Timeline**: Start date and duration
-    - **Marketing Channels Used**: e.g., Instagram, TikTok, YouTube, WeChat, TV, retail, email, e-commerce
-    - **Products Promoted**: Specific SKUs or product families (e.g., "Air Max 270")
-    - **Pricing Strategy**: Base price, discounts, bundling, flash sales, etc.
-    - **Campaign Objectives**: e.g., brand awareness, conversions, loyalty, clearance
-    - **Target Audience**: Demographic and psychographic profile
-    - **Campaign Mechanics**: e.g., influencer partnerships, user-generated content, contests, retargeting
-    - **Performance Metrics**:  
-    - Impressions  
-    - Click-Through Rate (CTR)  
-    - Conversion Rate  
-    - Return on Investment (ROI)  
-    - Engagement Rate
-
-    #### **Comparison Tables (required):**
-
-    Use **multiple side-by-side tables** to compare campaign elements. Keep each table to **no more than 5 columns** for clarity.
-
-    Suggested tables:
-
-    - 📦 **Product Focus Table**: Popular SKUs and campaign insights by brand  
-    - 🎯 **Target Audience vs. Campaign Objective**  
-    - 📱 **Channel Breakdown**: Separate table per platform (e.g., Instagram, WeChat, TikTok, etc.)  
-    - 📊 **Performance Metrics Comparison**  
-    - 🧩 Add any other relevant tables — the more detailed and organized, the better
+    **Do not include** campaigns outside of **{region}** or beyond the specified **{date_range}**.
 
     ---
 
-    ### **Formatting Guidelines**
+    In addition to events strictly within the range, also include **adjacent or overlapping campaigns** that:
 
-    - Use **markdown headings**, **bullet points**, and **tables** to improve readability
-    - Limit tables to **5 columns max** each
-    - Include **Harvard-style citations** for all third-party sources, case studies, or performance data
-    - Avoid using placeholder text for data unless absolutely necessary; real values from the context are preferred
-    - Do not include a conclusion
+    - **Launched just before** {date_range} and remained active into it  
+    - **Were announced or leaked within the timeframe**, even if execution is slightly later  
+    - Are **seasonally aligned** (e.g., tied to "6.6", "mid-year", Ramadan, Back-to-School, etc.) and are likely coordinated across the region  
+    - Show **cross-country consistency** or overlap in digital campaigns (e.g., similar app codes, same influencer partnerships)
+
+    ---
+
+    For each campaign or event, provide the following details:
+
+    - **Campaign/Event Name or Hashtag**
+    - **Exact Dates of the Campaign/Event**
+    - **Products or Categories Involved** (e.g., footwear, apparel, accessories, limited collections)
+    - **Quantitative Details** (e.g., % discount, price cut, voucher values, number of SKUs, audience reached)
+    - **Channel(s) of Availability** (e.g., app-only, website, physical stores, TikTok, influencer page, livestream)
+    - **Countries or Cities Affected** (be specific; avoid generalizations like “Southeast Asia”)
+    - **Type of Campaign or Event** (e.g., Promotional, Advocacy, Controversy, Loyalty, Social Impact)
+
+    ---
+
+    Also include a section titled `Additional Strategic Insights` that analyzes:
+
+    - Whether the campaign was part of a **regional trend or global alignment**  
+    - Any **notable overlap between the brands** (e.g., both launching 6.6 sales, targeting the same demographic)  
+    - Use of **loyalty programs or apps** to create exclusivity or extend discounts  
+    - Any **country-specific anomalies or particularly aggressive pricing tactics**
+
+    ---
+
+    Finally, append a summary table with the following columns:
+
+    | Brand | Campaign/Event Name | Date(s) | Key Products Affected | Quantitative Highlights | Channel(s) | Countries/Cities | Type |
+    |-------|----------------------|--------|------------------------|-------------------------|-------------|------------------|------|
+
+    If **no events or campaigns** were found for a brand during the specified period, **explicitly state this**. If applicable, also mention **when such campaigns usually occur** and if there were **notable missed opportunities** or **late-stage preparations** visible through press coverage, social media, or e-commerce channels.
+
+
     """
+   
+
     return USER_QUERY

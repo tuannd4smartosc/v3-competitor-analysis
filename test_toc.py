@@ -3,7 +3,7 @@ import os
 
 # Test function with external Markdown file
 if __name__ == "__main__":
-    input_md_path = "reports/Nike_ca_April 2025 to May 2025_Southeast Asia-20250516_094905.md"  # Relative path to your .md file
+    input_md_path = "reports/report-Adidas, Puma, Sketchers-Southeast Asia-June 01, 2025 to June 08, 2025-92272718b888474b88b7970c682cdec3.md"  # Relative path to your .md file
     output_pdf_path = "tests/output_test_new.pdf"
 
     # Ensure output directory exists

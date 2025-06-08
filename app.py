@@ -12,7 +12,7 @@ import datetime
 
 load_dotenv()
 
-st.set_page_config(page_title="Nike's Competitors Analysis Dashboard", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="MIRA: Marketing Intelligence & Research Agent", layout="wide", initial_sidebar_state="expanded")
 
 st.sidebar.title("Reports")
 
@@ -97,9 +97,16 @@ for file in all_report_files:
         filtered_reports.append(file)
 
 md_reports = sort_file_names(filtered_reports)
-selected_report = st.sidebar.selectbox("Select a Report", md_reports if md_reports else ["No reports match your filters"])
 
-st.title("Nike's Competitor Analysis Dashboard")
+# 🟢 Check if a new report was just generated
+if "new_report" in st.session_state and st.session_state["new_report"] in md_reports:
+    default_report_index = md_reports.index(st.session_state["new_report"])
+    selected_report = st.sidebar.selectbox("Select a Report", md_reports, index=default_report_index)
+    del st.session_state["new_report"]
+else:
+    selected_report = st.sidebar.selectbox("Select a Report", md_reports if md_reports else ["No reports match your filters"])
+
+st.title("MIRA: Marketing Intelligence & Research Agent")
 st.markdown("Analyze Nike's competitor pricing and promotions with a single click!")
 
 company_name = "Nike"
@@ -110,17 +117,16 @@ default_competitors = [
 ]
 
 competitor_names = st.multiselect("Competitors' Names", 
-                                  ["Adidas", "Levis", "New Balance", "Lululemon","Puma", 
-                                   "Sketchers","Under Armour", "Reebok", "ASICS", "Fila"],
-                                   accept_new_options=True,
-                                   )
+                                  default_competitors,
+                                  accept_new_options=True,
+                                  )
 
 today = datetime.date.today()
 start_date = today
 end_date = today.replace(year=today.year + 5)
 
-default_start = today
-default_end = today + datetime.timedelta(days=365)
+default_start = today - datetime.timedelta(days=7)
+default_end = today 
 
 date = st.date_input(
     "Date Range",
@@ -129,17 +135,14 @@ date = st.date_input(
     format="MM.DD.YYYY",
 )
 
-region = st.selectbox("Focused Region", ["Southeast Asia", "Greater China", "North America", "Europe", "Middle East & Africa (EMEA)", "Asia Pacific & latin America (ALPA)" ])
+region = st.selectbox("Focused Region", ["Southeast Asia & India", "Greater China", "North America", "Europe", "Middle East & Africa (EMEA)", "Asia Pacific & latin America (ALPA)", "Thailand", "India" ])
 
-col1, col2 = st.columns([1, 3])
+col1, col2 = st.columns([3, 1])
 
 with col1:
     if st.button("Run Competitor Analysis"):
         if all([company_name, competitor_names, date, region]):
             printer = Printer()
-            query = generate_prompt(company_name, competitor_names, date, region)
-            printer.update_item("query", "Generated query: " + query[:100] + "...", is_done=True)
-
             with st.spinner("Running analysis..."):
                 printer.update_item("research", "Starting research...", is_done=False)
                 try:
@@ -147,14 +150,16 @@ with col1:
                     asyncio.set_event_loop(loop)
                     start_date, end_date = date
                     date_range = f"{start_date.strftime('%B %d, %Y')} to {end_date.strftime('%B %d, %Y')}"
-                    research_manager = AiManager(company_name, ', '.join(competitor_names), date_range, region)
+                    research_manager = AiManager(company_name, ', '.join(competitor_names), date_range, region, printer)
                     output = loop.run_until_complete(research_manager.run_crews())
-                    print("result", output)
                     result = output.full_report
                     report_filename = output.file_name
-                    printer.mark_item_done("research")
                     report_path = os.path.join(REPORT_DIR, report_filename)
-                    selected_report = report_path
+
+                    # 🟢 Store in session_state before rerun
+                    st.session_state["new_report"] = report_filename
+
+                    printer.mark_item_done("research")
                     printer.update_item("result", "Report generated successfully!", is_done=True)
                     st.success("Analysis complete! Check the reports list.")
                     show_confetti()
@@ -166,13 +171,10 @@ with col1:
             st.warning("Please fill in all fields!")
 
 with col2:
-    print("selected_report",selected_report)
     if selected_report and selected_report != "No reports match your filters":
         pdf_path = os.path.join(REPORT_DIR, selected_report.replace(".md", ".pdf"))
-        print("pdf_path",pdf_path)
         get_pdf_download_link(pdf_path, selected_report.replace(".md", ".pdf"))
 
- 
 if selected_report and selected_report != "No reports match your filters":
     with open(os.path.join(REPORT_DIR, selected_report), "r") as f:
         report_content = f.read()
@@ -182,11 +184,9 @@ if selected_report and selected_report != "No reports match your filters":
 elif selected_report == "No reports match your filters":
     st.info("No reports match your selected filters. Please adjust your filter criteria or generate a new report.")
 
-
 st.markdown(
     """
     <style>
-    /* General Typography */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 16px;
@@ -198,7 +198,6 @@ st.markdown(
         font-weight: 600;
     }
 
-    /* Download Button */
     .stDownloadButton > button {
         width: auto;
         background-color: #0052cc;
@@ -218,7 +217,6 @@ st.markdown(
         color: #ffffff;
     }
 
-    /* Standard Button */
     .stButton > button {
         background-color: #28a745;
         color: white;
@@ -237,22 +235,18 @@ st.markdown(
         color: white;
     }
 
-    /* Sidebar Styling */
     .stSidebar {
         background-color: #f1f3f6;
     }
 
-    /* Progress Bar */
     .stProgress .st-bo {
         background-color: #28a745;
     }
 
-    /* Hide Streamlit default style that breaks layout if needed */
     .st-emotion-cache-179n174 {
         display: block;
     }
     </style>
-
     """,
     unsafe_allow_html=True
 )

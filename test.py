@@ -1,69 +1,63 @@
-# import uuid
-# import matplotlib.pyplot as plt
-# from openai import BaseModel
-# import seaborn as sns
-# import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
-# # Data from Footwear table
+# Sample data: Price Change % for products across different cities
+products = [
+    "Air Max 270", "Revolution 6", "Zoom Fly 5", "Dunk Low", "Air Force 1",
+    "Ultraboost 22", "Superstar", "Stan Smith", "Adizero Pro", "NMD_R1"
+]
 
-# class Product(BaseModel):
-#     brand: str
-#     """Brand name of the product"""
-    
-#     product: str
-#     """Product name"""
-    
-#     original_price: float
-#     """Product's original price before any discount or promotion"""
-    
-#     discounted_price: float
-#     """Product's final price after discount or promotion"""
-    
-# class ProductList(BaseModel):
-#     products: list[Product]
-#     """List of products used to generate the price comparison chart"""
+cities = ["Bangkok", "Jakarta", "Kuala Lumpur", "Manila", "Ho Chi Minh City"]
 
+# Simulated price change percentages (in %)
+price_changes_matrix = np.array([
+    [-10,  0,   5, -15, -5],
+    [  0, -5,   0,   3,  0],
+    [ 10,  5,  -5,   0,  8],
+    [-10, -8, -10, -5, -12],
+    [  0,  0,   0,   0,  0],
+    [-10, -5,  -8, -3, -7],
+    [  0,  0,   0,   0,  0],
+    [-8,  -5,  -4,  0, -6],
+    [ 10,  8,  12, 15,  9],
+    [-5,  -6,  -3, -4, -2]
+])
 
-# def generate_heat_map(products_list: ProductList):
-#     data = [[p.brand, p.product, p.original_price, p.discounted_price] for p in products_list.products]
+# Create color map manually
+def get_color(value):
+    if value < 0:
+        return 'green'
+    elif value > 0:
+        return 'red'
+    else:
+        return 'gray'
 
-#     # Convert to DataFrame
-#     df = pd.DataFrame(data, columns=["Brand", "Product", "Original", "Discounted"])
-#     df["Discount"] = df["Original"] - df["Discounted"]
+colors = np.vectorize(get_color)(price_changes_matrix)
 
-#     # Pivot table for heatmap
-#     pivot = df.pivot(index="Brand", columns="Product", values="Discount")
+fig, ax = plt.subplots(figsize=(10, 6))
 
-#     # Plot heatmap
-#     plt.figure(figsize=(12, 6))
-#     sns.heatmap(pivot, annot=True, fmt=".0f", cmap="YlOrRd", linewidths=0.5, cbar_kws={"label": "Discount (USD)"})
-#     plt.title("Footwear Discount Heatmap (Original - Discounted Price)")
-#     plt.ylabel("Brand")
-#     plt.xlabel("Product")
-#     plt.xticks(rotation=45, ha='right')
-#     plt.tight_layout()
-#     plt.savefig(f"charts/heat_map_{uuid.uuid4().hex}.png", dpi=300, bbox_inches='tight') 
+# Draw the heatmap cells manually using colored rectangles
+for i in range(len(products)):
+    for j in range(len(cities)):
+        rect = plt.Rectangle([j, i], 1, 1, facecolor=colors[i, j])
+        ax.add_patch(rect)
+        ax.text(j + 0.5, i + 0.5, f"{price_changes_matrix[i, j]:+.0f}%", 
+                ha='center', va='center', color='white', fontsize=9)
 
-# products_list = ProductList(
-#     products=[
-#         Product(brand="Nike", product="Air VaporMax 2023", original_price=210, discounted_price=180),
-#         Product(brand="Adidas", product="Ultraboost 22", original_price=190, discounted_price=170),
-#         Product(brand="Lululemon", product="Chargefeel Low", original_price=120, discounted_price=110),
-#         Product(brand="Skechers", product="Max Cushioning", original_price=90, discounted_price=80),
-#         Product(brand="Nike", product="React Infinity Run", original_price=150, discounted_price=130),
-#         Product(brand="Adidas", product="NMD R1", original_price=140, discounted_price=120),
-#         Product(brand="Lululemon", product="Blissfeel", original_price=150, discounted_price=140),
-#         Product(brand="Skechers", product="Go Walk 5", original_price=80, discounted_price=75),
-#         Product(brand="Nike", product="Pegasus 38", original_price=120, discounted_price=100),
-#         Product(brand="Adidas", product="Stan Smith", original_price=100, discounted_price=90),
-#         Product(brand="Puma", product="test", original_price=222, discounted_price=98),
-#     ]
-# )
+# Set ticks and labels
+ax.set_xlim(0, len(cities))
+ax.set_ylim(0, len(products))
+ax.set_xticks(np.arange(len(cities)) + 0.5)
+ax.set_xticklabels(cities)
+ax.set_yticks(np.arange(len(products)) + 0.5)
+ax.set_yticklabels(products)
+ax.invert_yaxis()
+ax.set_title("Price Change % Heatmap (1–8 June 2025)")
 
-# generate_heat_map(products_list)\
+# Hide spines and ticks
+for spine in ax.spines.values():
+    spine.set_visible(False)
+ax.tick_params(left=False, bottom=False)
 
-from utils import get_first_temp_filename
-
-
-chart_filename = get_first_temp_filename("temp")
-print("chart_filename", chart_filename)
+plt.tight_layout()
+plt.show()

@@ -1,6 +1,8 @@
 import glob
+import html
 import re
 import shutil
+import unicodedata
 import streamlit as st
 from markdown import markdown
 import json
@@ -12,41 +14,65 @@ from _agents.search import APAWebReference
 def show_confetti():
     st.balloons()
 
-def generate_title_from_markdown(markdown_text):
+def slugify(text):
+    """Creates a URL-safe slug from a heading title."""
+    text = unicodedata.normalize("NFKD", text)
+    text = re.sub(r"[^\w\s-]", "", text).strip().lower()
+    return re.sub(r"[-\s]+", "-", text)
+
+def generate_title_from_markdown(markdown_text, include_title_in_toc=False):
     match = re.search(r'^#\s+(.*)', markdown_text, re.MULTILINE)
     if match:
         title = match.group(1).strip()
-        markdown_text = markdown_text.replace(match.group(0), '', 1).lstrip()
+        if not include_title_in_toc:
+            markdown_text = markdown_text.replace(match.group(0), '', 1).lstrip()
         return title, markdown_text
     return "Nike Competitor Analysis", markdown_text
-
 
 def generate_toc_from_markdown(markdown_text):
     toc_entries = []
     modified_lines = []
 
-    header_index = 0
+    used_ids = set()
 
     for line in markdown_text.splitlines():
-        heading_match = re.match(r'^(#{2,3})\s+(.*)', line)
+        heading_match = re.match(r'^(#{2,6})\s+(.*)', line)
         if heading_match:
-            hashes, title = heading_match.groups()
+            hashes, raw_title = heading_match.groups()
             level = len(hashes)
-            anchor_id = f'section-{header_index}'
-            indent = '  ' * (level - 1)
-            
-            if level == 2:
-                title = f'<strong>{title}</strong>'
-            else:
-                title = title
 
-            toc_entries.append(f'{indent}<li style="margin-left: {(level - 1) * 1}em; list-style-type: none;"><span style="font-family: "Georgia", serif; all: unset; font-size: 12pt;"><a href="#{anchor_id}" style="color:#2a2a2a;text-decoration: none">{title}</a></span></li>')
-            line = f'{hashes} <a id="{anchor_id}"></a>{title}'
-            header_index += 1
+            clean_title = re.sub(r'\*\*(.*?)\*\*|__(.*?)__|\*(.*?)\*|`(.*?)`', r'\1\2\3\4', raw_title)
+            escaped_title = html.escape(clean_title.strip())
+
+            # Generate unique anchor_id from slug
+            base_slug = slugify(clean_title)
+            anchor_id = base_slug
+            suffix = 1
+            while anchor_id in used_ids:
+                anchor_id = f"{base_slug}-{suffix}"
+                suffix += 1
+            used_ids.add(anchor_id)
+
+            # Format heading line with anchor
+            line = f'{hashes} <a id="{anchor_id}"></a>{raw_title}'
+
+            # Format ToC entry
+            indent = '  ' * (level - 1)
+            formatted_title = f'<strong>{escaped_title}</strong>' if level == 2 else escaped_title
+            toc_entries.append(
+                f'{indent}<li style="margin-left: {(level - 1) * 1}em; list-style-type: none;">'
+                f'<span style="font-family: Georgia, serif; all: unset; font-size: 12pt;">'
+                f'<a href="#{anchor_id}" style="color:#2a2a2a;text-decoration: none">{formatted_title}</a>'
+                f'</span></li>'
+            )
 
         modified_lines.append(line)
 
-    toc_html = "<div class='toc'><h2>Table of Contents</h2>\n<ul>\n" + "\n".join(toc_entries) + "\n</ul>\n</div>\n<div style='page-break-after: always;'></div>"
+    toc_html = (
+        "<div class='toc'><h2>Table of Contents</h2>\n<ul>\n"
+        + "\n".join(toc_entries)
+        + "\n</ul>\n</div>\n<div style='page-break-after: always;'></div>"
+    )
     updated_markdown = "\n".join(modified_lines)
 
     return toc_html, updated_markdown
@@ -182,7 +208,8 @@ def markdown_to_pdf(markdown_text, output_path):
     </body>
     </html>
     """
-    print(">>>>>>>>>>>>>>> styled_html",styled_html)
+    with open("report.html", "w", encoding="utf-8") as file:
+        file.write(styled_html)
     HTML(string=styled_html, base_url=os.getcwd() ).write_pdf(output_path)
 
 def get_pdf_download_link(pdf_path, filename):
