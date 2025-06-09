@@ -189,8 +189,6 @@ class AiManager:
         Display one heat map where each cell represents a product, grouped by brand, with color intensity indicating the discount rate. Use clear labeling to identify products and their respective brands.
         """
             
-        print("input for chart generation:", input)
-
         result = await Runner.run(
             chart_agent,
             input,
