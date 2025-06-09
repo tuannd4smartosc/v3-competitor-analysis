@@ -63,7 +63,8 @@ PROMPT = (
     "no_placeholders": "Exclude placeholder text or references to missing data.",
     "no_document_title": "Do not include a top-level report title or headings beyond the section’s internal subheadings.",
     "no_visuals": "Do not reference or include charts, graphs, or visualizations.",
-    "no_conclusion": "Do not include a conclusion and treat the output as a section text."
+    "no_conclusion": "Do not include a conclusion and treat the output as a section text.",
+    "table_headings": "Use a Heading 3 (###) syntax for all table names (e.g. ### Local Price Comparison Summaries, etc.)"
   }
 }
  """
