@@ -1,88 +1,142 @@
-from __future__ import annotations
-
 import asyncio
-import time
+import itertools
+import os
+import uuid
 
 from agents import Runner, custom_span, gen_trace_id, trace
-
-from _agents.planner_agent import WebSearchItem, WebSearchPlan, planner_agent
-from _agents.search_agent import search_agent
-from _agents.writer_agent import ReportData, writer_agent
-from printer import Printer
-from file_handler import export_md
-from datetime import datetime
-from utils import markdown_to_pdf
-import os
-from email_sender import send_email_with_attachment
+from openai import BaseModel
+from _agents.planner import WebSearchItem, WebSearchPlan, planner_agent
+from _agents.search import search_agent, SearchResult, APAWebReference
+from _agents.writer import ReportSectionData, writer_agent
+from _agents.chart import ChartListOutput, chart_agent
 from config import REPORT_DIR
+from crews.price_comparison import generate_price_analysis_user_query
+from crews.promotion_campaigns import generate_promotion_campaign_user_query
+from crews.traffic_revenue import generate_traffic_revenue_query
+from utils import generate_citation_markdown, markdown_to_pdf, export_md
 
-class ResearchManager:
-    def __init__(self, id, printer):
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+topics = {
+    "promotion_campaigns": "Promotion campaigns",
+    "pricing_analysis": "Price analysis",
+    "traffic_revenue": "Traffic & Revenue"
+}
+
+class SectionRequest(BaseModel):
+    topic: str
+    user_prompt: str
+
+class SectionOutputData(BaseModel):
+    markdown_text: str
+    chart_data: ChartListOutput | None
+    section_title: str
+    reference_list: list[APAWebReference]
+    
+class FinalOutputData(BaseModel):
+    full_report: str
+    file_name: str
+
+class AiManager:
+    def __init__(self, company_name, competitors_names, date_range, region, printer):
+        self.company_name = company_name
+        self.competitors_names = competitors_names
+        self.date_range = date_range
+        self.region = region
         self.printer = printer
-        self.file_name = f"{id}-{timestamp}.md"
-        self.id = id
-
-    async def run(self, query: str) -> None:
+        
+    async def run_crews(self):
+        params = [self.company_name, self.competitors_names, self.date_range, self.region]
+        section_requests = [
+            SectionRequest(
+                topic=topics["promotion_campaigns"],
+                user_prompt=generate_promotion_campaign_user_query(
+                    *params
+                ),
+            ),
+            SectionRequest(
+                topic=topics["pricing_analysis"],
+                user_prompt=generate_price_analysis_user_query(
+                    *params
+                ),
+            ),
+            SectionRequest(
+                topic=topics["traffic_revenue"],
+                user_prompt=generate_traffic_revenue_query(
+                    *params
+                ),
+            ),
+        ]
+        tasks = [self.generate_section(section_req.topic, section_req.user_prompt) for section_req in section_requests]
+        section_outputs = await asyncio.gather(*tasks)
+        report_title = f"Competitor Analysis Report: {self.company_name} vs {self.competitors_names} in ({self.region}, {self.date_range})"
+        full_report = ""
+        full_report += f"# {report_title}\n\n"
+        references = []
+        for section in section_outputs:
+            full_report += "\n\n" + f"## {section.section_title}" + "\n\n" + section.markdown_text
+            if(section.chart_data):
+                for chart in section.chart_data.charts:
+                    print("chart", chart)
+                    chart_filename = chart.output_file_path if chart.output_file_path else "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
+                    print("chart_filename", chart_filename)
+                    full_report += "\n\n" + f"![Chart]({chart_filename})" + "\n" + f"*{chart.chart_description}*"
+            references = references + section.reference_list
+        citation_markdown = generate_citation_markdown(references)
+        full_report += "\n\n" + "## References" + "\n\n" + citation_markdown
+        file_name = f"{self.generate_report_id()}.md"
+        export_md(full_report, file_name)
+        pdf_path = os.path.join(REPORT_DIR, file_name.replace(".md", ".pdf"))
+        markdown_to_pdf(full_report, pdf_path)
+        return FinalOutputData(
+            full_report=full_report,
+            file_name=file_name
+        )
+        
+        
+    async def generate_section(self, topic: str, query: str) -> SectionOutputData:
         trace_id = gen_trace_id()
         with trace("Research trace", trace_id=trace_id):
-            self.printer.update_item(
-                "trace_id",
-                f"View trace: https://platform.openai.com/traces/trace?trace_id={trace_id}",
-                is_done=True,
-                hide_checkmark=True,
-            )
+            try:
+                self.printer.update_item("writing", f"Thinking about section: {topic}", is_done=False)
+                search_plan = await self._plan_searches(query)
+                print("search_plan:", search_plan)
 
-            self.printer.update_item(
-                "starting",
-                "\nStarting research...",
-                is_done=True,
-                hide_checkmark=True,
-            )
-            search_plan = await self._plan_searches(query)
-            search_results = await self._perform_searches(search_plan)
-            report = await self._write_report(query, search_results)
-
-            final_report = f"Report summary\n\n{report.short_summary}"
-            self.printer.update_item("final_report", final_report, is_done=True)
-
-            self.printer.end()
-
-        print("\n\n=====REPORT=====\n\n")
-        print(f"Report: {report.markdown_report}")
-        print("\n\n=====FOLLOW UP QUESTIONS=====\n\n")
-        follow_up_questions = "\n".join(report.follow_up_questions)
-        print(f"\n\nFollow up questions: {follow_up_questions}")
-        export_md(report.markdown_report, self.file_name)
-        print("\n\nEXPORTED REPORT MD SUCCESSFULLY!")
-        pdf_path = os.path.join(REPORT_DIR, self.file_name.replace(".md", ".pdf"))
-        markdown_to_pdf(report.markdown_report, pdf_path)
-        print("\nEXPORTED REPORT PDF SUCCESSFULLY!")
-        subject = f"Competitor Analysis Report: {self.id}"
-        body = "This is a test email with an attachment sent via Mailtrap."
-        from_email = "sender@example.com"  
-        to_email = "recipient@example.com"  
-        file_paths = [pdf_path]
-        print("\n\n START SENDING EMAIL!")
-        send_email_with_attachment(subject, body, from_email, to_email, report.markdown_report, file_paths)
-        print("\n\n SENT EMAIL SUCCESSFULLY!")
-
+                search_results = await self._perform_searches(search_plan)
+                print("search_results completed!")
+                
+                search_results_texts = [item.search_result for item in search_results]
+                reference_list = list(itertools.chain.from_iterable([item.reference_list for item in search_results]))
+                self.printer.update_item("writing", f"Starting writing section: {topic}", is_done=False)
+                section = await self._write_section(query, search_results_texts)
+                chart_data = None
+                print("topic", topic, topics["pricing_analysis"], topic == topics["pricing_analysis"])
+                if(topic == topics["pricing_analysis"]):
+                    print(">>> Creating chart", topic)
+                    chart_data = await self._generate_charts(section.markdown_report)
+                    print(">>>>>>>>>. chart_data", chart_data)
+                self.printer.update_item("writing", f"Finished writing section: {topic}", is_done=False)
+                
+                return SectionOutputData(
+                    markdown_text=section.markdown_report,
+                    chart_data=chart_data,
+                    section_title=section.section_title,
+                    reference_list=reference_list
+                )
+            except Exception as e:
+                print(f"generate_section failed for query={query}: {e}")
+                return None
+        
+    def generate_report_id(self):
+        return f"report-{self.competitors_names}-{self.region}-{self.date_range}-{uuid.uuid4().hex}"
+    
     async def _plan_searches(self, query: str) -> WebSearchPlan:
-        self.printer.update_item("planning", "Planning searches...")
         result = await Runner.run(
             planner_agent,
             f"Query: {query}",
         )
-        self.printer.update_item(
-            "planning",
-            f"Will perform {len(result.final_output.searches)} searches",
-            is_done=True,
-        )
         return result.final_output_as(WebSearchPlan)
 
-    async def _perform_searches(self, search_plan: WebSearchPlan) -> list[str]:
+    async def _perform_searches(self, search_plan: WebSearchPlan) -> list[SearchResult]:
         with custom_span("Search the web"):
-            self.printer.update_item("searching", "Searching...")
             num_completed = 0
             tasks = [asyncio.create_task(self._search(item)) for item in search_plan.searches]
             results = []
@@ -91,47 +145,53 @@ class ResearchManager:
                 if result is not None:
                     results.append(result)
                 num_completed += 1
-                self.printer.update_item(
-                    "searching", f"Searching... {num_completed}/{len(tasks)} completed"
-                )
-            self.printer.mark_item_done("searching")
             return results
 
-    async def _search(self, item: WebSearchItem) -> str | None:
+    async def _search(self, item: WebSearchItem) -> SearchResult | None:
         input = f"Search term: {item.query}\nReason for searching: {item.reason}"
         try:
             result = await Runner.run(
                 search_agent,
                 input,
             )
-            return str(result.final_output)
+            return result.final_output_as(SearchResult)
         except Exception:
             return None
 
-    async def _write_report(self, query: str, search_results: list[str]) -> ReportData:
-        self.printer.update_item("writing", "\nThinking about report...\nThis could take a few minutes.\n")
+    async def _write_section(self, query: str, search_results: list[str]) -> ReportSectionData:
+        print("search_results", search_results)
         input = f"Original query: {query}\nSummarized search results: {search_results}"
-        result = Runner.run_streamed(
+        result = await Runner.run(
             writer_agent,
             input,
         )
-        update_messages = [
-            "\nThinking about report...\nThis could take a few minutes.",
-            "\nPlanning report structure...",
-            "\nWriting outline...",
-            "\nCreating sections...",
-            "\nCleaning up formatting...",
-            "\nFinalizing report...",
-            "\nFinishing report...\nThis could take a few minutes.",
-        ]
+        return result.final_output_as(ReportSectionData)
+    
+    async def _generate_charts(self, data_context: str) -> ChartListOutput:
+        input = f"""
+        Provided data context for chart generation:
+        {data_context}
 
-        last_update = time.time()
-        next_message = 0
-        async for _ in result.stream_events():
-            if time.time() - last_update > 5 and next_message < len(update_messages):
-                self.printer.update_item("writing", update_messages[next_message])
-                next_message += 1
-                last_update = time.time()
+        From the search results above, generate multiple heapmaps, one separate heatmap for each country found in the provided data above. 
+        Each heatmap should display the discount rates of products grouped by their country of origin.
+        The heatmap should have product names or brands on one axis and their respective discount percentages on the other.
+        For each product, use the following attributes:
 
-        self.printer.mark_item_done("writing")
-        return result.final_output_as(ReportData)
+        - Product name
+        - Brand
+        - Original price
+        - Discounted price
+        - Location (country of origin)
+
+        Calculate the discount rate as a percentage:
+            - Discount Rate = (Original Price - Discounted Price) / Original Price × 100%
+
+        Display one heat map where each cell represents a product, grouped by brand, with color intensity indicating the discount rate. Use clear labeling to identify products and their respective brands.
+        """
+            
+        result = await Runner.run(
+            chart_agent,
+            input,
+        )
+        print(f"Generated chart: {result.final_output}")
+        return result.final_output_as(ChartListOutput)

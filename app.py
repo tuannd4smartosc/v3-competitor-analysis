@@ -3,17 +3,15 @@ import os
 from datetime import datetime
 import asyncio
 from dotenv import load_dotenv
-from manager import ResearchManager
+from manager import AiManager
 from config import REPORT_DIR
-from utils import show_confetti, markdown_to_pdf, get_pdf_download_link, sort_file_names
-from user_prompt import generate_prompt
+from utils import show_confetti, get_pdf_download_link, sort_file_names
 from st_printer import Printer
 import datetime
-from streamlit_tags import st_tags
 
 load_dotenv()
 
-st.set_page_config(page_title="Nike's Competitors Analysis Dashboard", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="MIRA: Marketing Intelligence & Research Agent", layout="wide", initial_sidebar_state="expanded")
 
 st.sidebar.title("Reports")
 
@@ -98,9 +96,16 @@ for file in all_report_files:
         filtered_reports.append(file)
 
 md_reports = sort_file_names(filtered_reports)
-selected_report = st.sidebar.selectbox("Select a Report", md_reports if md_reports else ["No reports match your filters"])
 
-st.title("Nike's Competitor Analysis Dashboard")
+# 🟢 Check if a new report was just generated
+if "new_report" in st.session_state and st.session_state["new_report"] in md_reports:
+    default_report_index = md_reports.index(st.session_state["new_report"])
+    selected_report = st.sidebar.selectbox("Select a Report", md_reports, index=default_report_index)
+    del st.session_state["new_report"]
+else:
+    selected_report = st.sidebar.selectbox("Select a Report", md_reports if md_reports else ["No reports match your filters"])
+
+st.title("MIRA: Marketing Intelligence & Research Agent")
 st.markdown("Analyze Nike's competitor pricing and promotions with a single click!")
 
 company_name = "Nike"
@@ -111,17 +116,16 @@ default_competitors = [
 ]
 
 competitor_names = st.multiselect("Competitors' Names", 
-                                  ["Adidas", "Levis", "New Balance", "Lululemon","Puma", 
-                                   "Sketchers","Under Armour", "Reebok", "ASICS", "Fila"],
-                                   accept_new_options=True,
-                                   )
+                                  default_competitors,
+                                  accept_new_options=True,
+                                  )
 
 today = datetime.date.today()
 start_date = today
 end_date = today.replace(year=today.year + 5)
 
-default_start = today
-default_end = today + datetime.timedelta(days=365)
+default_start = today - datetime.timedelta(days=7)
+default_end = today 
 
 date = st.date_input(
     "Date Range",
@@ -130,29 +134,31 @@ date = st.date_input(
     format="MM.DD.YYYY",
 )
 
-region = st.selectbox("Focused Region", ["Southeast Asia", "Greater China", "North America", "Europe", "Middle East & Africa (EMEA)", "Asia Pacific & latin America (ALPA)" ])
+region = st.selectbox("Focused Region", ["Southeast Asia & India", "Greater China", "North America", "Europe", "Middle East & Africa (EMEA)", "Asia Pacific & latin America (ALPA)", "Thailand", "India" ])
 
-col1, col2 = st.columns([1, 3])
+col1, col2 = st.columns([3, 1])
 
 with col1:
     if st.button("Run Competitor Analysis"):
         if all([company_name, competitor_names, date, region]):
             printer = Printer()
-            query = generate_prompt(company_name, competitor_names, date, region)
-            printer.update_item("query", "Generated query: " + query[:100] + "...", is_done=True)
-
             with st.spinner("Running analysis..."):
                 printer.update_item("research", "Starting research...", is_done=False)
                 try:
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
-                    manager_id = f"{company_name}_ca_{date}_{region}"
-                    research_manager = ResearchManager(manager_id, printer)
-                    result = loop.run_until_complete(ResearchManager(manager_id, printer).run(query))
-                    printer.mark_item_done("research")
-                    report_filename = research_manager.file_name
+                    start_date, end_date = date
+                    date_range = f"{start_date.strftime('%B %d, %Y')} to {end_date.strftime('%B %d, %Y')}"
+                    research_manager = AiManager(company_name, ', '.join(competitor_names), date_range, region, printer)
+                    output = loop.run_until_complete(research_manager.run_crews())
+                    result = output.full_report
+                    report_filename = output.file_name
                     report_path = os.path.join(REPORT_DIR, report_filename)
-                    selected_report = report_path
+
+                    # 🟢 Store in session_state before rerun
+                    st.session_state["new_report"] = report_filename
+
+                    printer.mark_item_done("research")
                     printer.update_item("result", "Report generated successfully!", is_done=True)
                     st.success("Analysis complete! Check the reports list.")
                     show_confetti()
@@ -168,57 +174,72 @@ with col2:
         pdf_path = os.path.join(REPORT_DIR, selected_report.replace(".md", ".pdf"))
         get_pdf_download_link(pdf_path, selected_report.replace(".md", ".pdf"))
 
- 
 if selected_report and selected_report != "No reports match your filters":
     with open(os.path.join(REPORT_DIR, selected_report), "r") as f:
         report_content = f.read()
+    report_content = report_content.replace("![Chart](temp/", "*Please download PDF file to view the chart*  ---> ![Chart](temp/")
     st.divider()
     st.markdown(report_content, unsafe_allow_html=True)
 elif selected_report == "No reports match your filters":
     st.info("No reports match your selected filters. Please adjust your filter criteria or generate a new report.")
 
-
 st.markdown(
     """
     <style>
-    .stDownloadButton > button {
-        width: fit-content;
-        background-color: red;
-        color: white;
-        border-radius: 5px;
-        padding: 10px 20px;
-        transition: background-color 0.3s;
-    }
-
-    .stDownloadButton>button:hover {
-        background-color: #ffffff;
-        color: red;
-        border: 1px solid red;
-    }
-
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 5px;
-        padding: 10px 20px;
-        transition: background-color 0.3s;
-    }
-    .stButton>button:hover {
-        background-color: #ffffff;
-        color: #4CAF50;
-        border: 1px solid #4CAF50;
-    }
-    .stSidebar {
-        background-color: #f8f9fa;
-    }
-    .stProgress .st-bo {
-        background-color: #4CAF50;
-    }
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 16px;
+        color: #333;
     }
+
     h1, h2, h3 {
-        color: #2c3e50;
+        color: #1f2e4d;
+        font-weight: 600;
+    }
+
+    .stDownloadButton > button {
+        width: auto;
+        background-color: #0052cc;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .stDownloadButton > button:hover {
+        background-color: #003d99;
+        color: #ffffff;
+    }
+
+    .stButton > button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .stButton > button:hover {
+        background-color: #218838;
+        color: white;
+    }
+
+    .stSidebar {
+        background-color: #f1f3f6;
+    }
+
+    .stProgress .st-bo {
+        background-color: #28a745;
     }
 
     .st-emotion-cache-179n174 {

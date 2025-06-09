@@ -15,6 +15,10 @@ markdown = "^3.7"
 weasyprint = "^65.0"
 streamlit = "^1.44.1"
 streamlit-tags = "^1.2.8"
+matplotlib = "^3.10.3"
+seaborn = "^0.13.2"
+requests = "^2.32.3"
+beautifulsoup4 = "^4.13.4"
 
 
 [build-system]

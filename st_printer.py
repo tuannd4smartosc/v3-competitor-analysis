@@ -1,13 +1,13 @@
 import streamlit as st
 
-# Printer class for Streamlit
 class Printer:
-    def __init__(self):
+    def __init__(self, title: str = "Logs"):
         if "printer_items" not in st.session_state:
             st.session_state.printer_items = {}
         if "hide_done_ids" not in st.session_state:
             st.session_state.hide_done_ids = set()
-        self.container = st.empty()
+        self.expander_title = title
+        self.container = None  # Will be created inside expander on first flush
 
     def end(self) -> None:
         pass
@@ -26,16 +26,21 @@ class Printer:
 
     def mark_item_done(self, item_id: str) -> None:
         if item_id in st.session_state.printer_items:
-            content = st.session_state.printer_items[item_id][0]
+            content, _ = st.session_state.printer_items[item_id]
             st.session_state.printer_items[item_id] = (content, True)
         self.flush()
 
     def flush(self) -> None:
-        renderables = []
-        for item_id, (content, is_done) in st.session_state.printer_items.items():
-            if is_done:
-                prefix = "\n\n✅ " if item_id not in st.session_state.hide_done_ids else ""
-                renderables.append(prefix + content)
-            else:
-                renderables.append(f"⏳ {content}")
-        self.container.write("\n".join(renderables) if renderables else "No tasks yet.")
+        with st.expander(self.expander_title, expanded=True):
+            if self.container is None:
+                self.container = st.container()
+            self.container.empty()
+            with self.container:
+                for item_id, (content, is_done) in st.session_state.printer_items.items():
+                    if is_done:
+                        if item_id in st.session_state.hide_done_ids:
+                            st.markdown(f"- {content}", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"✅ **{content}**", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"⏳ _{content}_", unsafe_allow_html=True)
