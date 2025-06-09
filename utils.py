@@ -82,7 +82,7 @@ def markdown_to_pdf(markdown_text, output_path):
     toc_html, updated_markdown = generate_toc_from_markdown(markdown_text)
     title_html, md_text = generate_title_from_markdown(markdown_text)
 
-    html_text = markdown(updated_markdown + "\n\n", extensions=['markdown.extensions.tables', 'markdown.extensions.extra'])
+    html_text = markdown(updated_markdown + "\n\n", extensions=['markdown.extensions.tables', 'markdown.extensions.extra', 'markdown.extensions.nl2br'])
     styled_html = f"""
     <body>
         <style>
