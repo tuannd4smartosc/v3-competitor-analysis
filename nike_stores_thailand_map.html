@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_3906b8ccc02312ba75ea0b7adeb61707 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_3906b8ccc02312ba75ea0b7adeb61707" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_3906b8ccc02312ba75ea0b7adeb61707 = L.map(
+                "map_3906b8ccc02312ba75ea0b7adeb61707",
+                {
+                    center: [13.75, 100.5],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 6,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_10a58e27cba2513ba9f8d2c44d80c208 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_10a58e27cba2513ba9f8d2c44d80c208.addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var marker_8a8072afb90b9bd1798f045c10b2f056 = L.marker(
+                [13.6952024, 100.8317796],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_1772f98ff0f559d65c9211e1e94e1f44 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_97f2e9ab45e7369c85caad9bf0995529 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a4372ca5bb41a7ffcd89eab9f59aac93 = $(`<div id="html_a4372ca5bb41a7ffcd89eab9f59aac93" style="width: 100.0%; height: 100.0%;">     <b>Nike Unite Store - Siam Premium Outlet</b><br>     <i>Sportswear store</i><br><br>     <b>Address:</b> สยาม พรีเมี่ยม เอาท์เล็ต กรุงเทพ ยูนิตจี 37 989, Bang Sao Thong, Samut Prakan 10570<br>     <b>Rating:</b> 4.5 (613 reviews)<br>     <b>Phone:</b> 02 088 4727<br>     <b>Website:</b> <a href="https://www.nike.com/th/retail/s/nike-factory-store-bpo" target="_blank">Visit</a>     </div>`)[0];
+                popup_97f2e9ab45e7369c85caad9bf0995529.setContent(html_a4372ca5bb41a7ffcd89eab9f59aac93);
+            
+        
+
+        marker_8a8072afb90b9bd1798f045c10b2f056.bindPopup(popup_97f2e9ab45e7369c85caad9bf0995529)
+        ;
+
+        
+    
+    
+                marker_8a8072afb90b9bd1798f045c10b2f056.setIcon(icon_1772f98ff0f559d65c9211e1e94e1f44);
+            
+    
+            var marker_4ff0081f2688514446c02d30b1745cb1 = L.marker(
+                [13.7262792, 100.510427],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_8034e3b276a682e14996fb6f8af4088a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_59d9e5ab89ffe77d1e934d0bfe9132e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8f910747df591b096a777226a347007c = $(`<div id="html_8f910747df591b096a777226a347007c" style="width: 100.0%; height: 100.0%;">     <b>Nike Icon Siam</b><br>     <i>Sportswear store</i><br><br>     <b>Address:</b> Icon Siam, 299Unit 215-216 Floor 2Charoen Nakhon RoadKhlong Ton Sai, Bangkok 10600<br>     <b>Rating:</b> 4.3 (111 reviews)<br>     <b>Phone:</b> 02 004 3600<br>     <b>Website:</b> <a href="https://www.nike.com/th/retail/s/nike-icon-siam" target="_blank">Visit</a>     </div>`)[0];
+                popup_59d9e5ab89ffe77d1e934d0bfe9132e8.setContent(html_8f910747df591b096a777226a347007c);
+            
+        
+
+        marker_4ff0081f2688514446c02d30b1745cb1.bindPopup(popup_59d9e5ab89ffe77d1e934d0bfe9132e8)
+        ;
+
+        
+    
+    
+                marker_4ff0081f2688514446c02d30b1745cb1.setIcon(icon_8034e3b276a682e14996fb6f8af4088a);
+            
+    
+            var marker_76091fd484f91c1ce883fb7d5bb8eb81 = L.marker(
+                [13.7460665, 100.5333483],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_6b6c9398ae284d093f3af342a0529215 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e36ec6dfac47e2bb2ddfd885574d29f7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_effbded6c7a1e00539cec8190bff0d0b = $(`<div id="html_effbded6c7a1e00539cec8190bff0d0b" style="width: 100.0%; height: 100.0%;">     <b>NIKE SIAM CENTER</b><br>     <i>Sportswear store</i><br><br>     <b>Address:</b> Siam Center, 989 Ground FloorUnit G01, G02, GH06Rama 1 Road, Pathum Wan, Bangkok 10330<br>     <b>Rating:</b> 4.2 (201 reviews)<br>     <b>Phone:</b> 02 658 1180<br>     <b>Website:</b> <a href="https://www.nike.com/th/retail/s/nike-bangkok" target="_blank">Visit</a>     </div>`)[0];
+                popup_e36ec6dfac47e2bb2ddfd885574d29f7.setContent(html_effbded6c7a1e00539cec8190bff0d0b);
+            
+        
+
+        marker_76091fd484f91c1ce883fb7d5bb8eb81.bindPopup(popup_e36ec6dfac47e2bb2ddfd885574d29f7)
+        ;
+
+        
+    
+    
+                marker_76091fd484f91c1ce883fb7d5bb8eb81.setIcon(icon_6b6c9398ae284d093f3af342a0529215);
+            
+    
+            var marker_f43a309dee799273e65cc16dcbe8331f = L.marker(
+                [13.7468128, 100.5383878],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_71ca07da6c124f94ad2b485c50769e61 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f47c52c7c3eed9439851096605339a58 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bd5035c6134ebddf9cd595768ecac751 = $(`<div id="html_bd5035c6134ebddf9cd595768ecac751" style="width: 100.0%; height: 100.0%;">     <b>NIKE CENTRAL WORLD</b><br>     <i>Sportswear store</i><br><br>     <b>Address:</b> Central World Unit D206, D207, D219 Floor 2, Pathum Wan, Bangkok 10330<br>     <b>Rating:</b> 3.8 (167 reviews)<br>     <b>Phone:</b> 02 646 1026<br>     <b>Website:</b> <a href="https://www.nike.com/th/retail/s/nike-at-central-world-plaza" target="_blank">Visit</a>     </div>`)[0];
+                popup_f47c52c7c3eed9439851096605339a58.setContent(html_bd5035c6134ebddf9cd595768ecac751);
+            
+        
+
+        marker_f43a309dee799273e65cc16dcbe8331f.bindPopup(popup_f47c52c7c3eed9439851096605339a58)
+        ;
+
+        
+    
+    
+                marker_f43a309dee799273e65cc16dcbe8331f.setIcon(icon_71ca07da6c124f94ad2b485c50769e61);
+            
+    
+            var marker_b01c40e9c3e1af15cb9c4f315415c658 = L.marker(
+                [13.7208244, 100.5296695],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_f6b6f4b72b646121f340beda59666342 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5f2107496465dab30ea7a3fbca5c1e4e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_58e5fb8367243026911e5a5462d20dbe = $(`<div id="html_58e5fb8367243026911e5a5462d20dbe" style="width: 100.0%; height: 100.0%;">     <b>Nike (Thailand)</b><br>     <i>Corporate office</i><br><br>     <b>Address:</b> 195 Naradhiwas Rajanagarindra Rd, Sathon, Bangkok 10120<br>     <b>Rating:</b> 3.9 (11 reviews)<br>     <b>Phone:</b> 02 646 6100<br>     <b>Website:</b> <a href="http://www.nike.com/th/th_th/" target="_blank">Visit</a>     </div>`)[0];
+                popup_5f2107496465dab30ea7a3fbca5c1e4e.setContent(html_58e5fb8367243026911e5a5462d20dbe);
+            
+        
+
+        marker_b01c40e9c3e1af15cb9c4f315415c658.bindPopup(popup_5f2107496465dab30ea7a3fbca5c1e4e)
+        ;
+
+        
+    
+    
+                marker_b01c40e9c3e1af15cb9c4f315415c658.setIcon(icon_f6b6f4b72b646121f340beda59666342);
+            
+    
+            var marker_4baa30107f12e8284778fafab2e55a1e = L.marker(
+                [18.7688123, 98.974325],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_6573f2f44d7a6bb49210f61e8332f811 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2ebddc7115b1a911a94d376c850a6e16 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_efd97be679326b09f3bc176b0ea42239 = $(`<div id="html_efd97be679326b09f3bc176b0ea42239" style="width: 100.0%; height: 100.0%;">     <b>ไนกี้ เซ็นทรัล เชียงใหม่ แอร์พอร์ต</b><br>     <i>Clothing store</i><br><br>     <b>Address:</b> 9 Airport, Central Plaza Chiang Mai, Chiang Mai 50200<br>     <b>Rating:</b> 4.3 (480 reviews)<br>     <b>Phone:</b> 052 081 768<br>     <b>Website:</b> <a href="http://nike.com/" target="_blank">Visit</a>     </div>`)[0];
+                popup_2ebddc7115b1a911a94d376c850a6e16.setContent(html_efd97be679326b09f3bc176b0ea42239);
+            
+        
+
+        marker_4baa30107f12e8284778fafab2e55a1e.bindPopup(popup_2ebddc7115b1a911a94d376c850a6e16)
+        ;
+
+        
+    
+    
+                marker_4baa30107f12e8284778fafab2e55a1e.setIcon(icon_6573f2f44d7a6bb49210f61e8332f811);
+            
+    
+            var marker_7b94c123bc7a8208ab81711439bdb648 = L.marker(
+                [13.824602, 100.678052],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_725ea4f62c24b3fa9c67214fb7815146 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b2c84cbf0cf83cb070a33281fde95642 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_84c5651cb2b99cf71a56e1b2f470e1de = $(`<div id="html_84c5651cb2b99cf71a56e1b2f470e1de" style="width: 100.0%; height: 100.0%;">     <b>Nike</b><br>     <i>Sporting goods store</i><br><br>     <b>Address:</b> L2,2002, ซอย 39 ถนน รามอินทรา, Kan Na Yao, Bangkok 10230<br>     <b>Rating:</b> 4.1 (7 reviews)<br>     <b>Phone:</b> N/A<br>     <b>Website:</b> <a href="http://www.nike.com/" target="_blank">Visit</a>     </div>`)[0];
+                popup_b2c84cbf0cf83cb070a33281fde95642.setContent(html_84c5651cb2b99cf71a56e1b2f470e1de);
+            
+        
+
+        marker_7b94c123bc7a8208ab81711439bdb648.bindPopup(popup_b2c84cbf0cf83cb070a33281fde95642)
+        ;
+
+        
+    
+    
+                marker_7b94c123bc7a8208ab81711439bdb648.setIcon(icon_725ea4f62c24b3fa9c67214fb7815146);
+            
+    
+            var marker_7a35d5c3a479fead2e6f68f5eed7eeec = L.marker(
+                [13.7378315, 100.5604778],
+                {
+}
+            ).addTo(map_3906b8ccc02312ba75ea0b7adeb61707);
+        
+    
+            var icon_3db9726b7c444144d065dbe98a285730 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5bc842155ae9a6f507bfcfc56a1ee942 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ab69382b0b7a02f33fcf924fd0881629 = $(`<div id="html_ab69382b0b7a02f33fcf924fd0881629" style="width: 100.0%; height: 100.0%;">     <b>Nike</b><br>     <i>Sporting goods store</i><br><br>     <b>Address:</b> Terminal21, Sukhumvit 19, Watthana, Bangkok 10110<br>     <b>Rating:</b> 4.8 (4 reviews)<br>     <b>Phone:</b> 02 108 0708<br>     <b>Website:</b> <a href="http://www.nike.com/th/th_th/" target="_blank">Visit</a>     </div>`)[0];
+                popup_5bc842155ae9a6f507bfcfc56a1ee942.setContent(html_ab69382b0b7a02f33fcf924fd0881629);
+            
+        
+
+        marker_7a35d5c3a479fead2e6f68f5eed7eeec.bindPopup(popup_5bc842155ae9a6f507bfcfc56a1ee942)
+        ;
+
+        
+    
+    
+                marker_7a35d5c3a479fead2e6f68f5eed7eeec.setIcon(icon_3db9726b7c444144d065dbe98a285730);
+            
+</script>
+</html>
