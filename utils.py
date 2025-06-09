@@ -10,6 +10,7 @@ import os
 from weasyprint import HTML
 
 from _agents.search import APAWebReference
+from config import REPORT_DIR
 
 def show_confetti():
     st.balloons()
@@ -276,3 +277,10 @@ def generate_citation_markdown(reference_list: list[APAWebReference]) -> str:
     citations = [format_apa_citation(ref) for ref in reference_list]
     markdown_text = "\n\n".join(citations)
     return markdown_text
+
+
+def export_md(markdown_content, output_filename):
+    os.makedirs(REPORT_DIR, exist_ok=True)
+    file_path = os.path.join(REPORT_DIR, output_filename)
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(markdown_content)

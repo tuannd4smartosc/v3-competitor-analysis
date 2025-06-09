@@ -1,7 +1,6 @@
 import asyncio
 import itertools
 import os
-import time
 import uuid
 
 from agents import Runner, custom_span, gen_trace_id, trace
@@ -9,13 +8,12 @@ from openai import BaseModel
 from _agents.planner import WebSearchItem, WebSearchPlan, planner_agent
 from _agents.search import search_agent, SearchResult, APAWebReference
 from _agents.writer import ReportSectionData, writer_agent
-from _agents.chart import ChartListOutput, ChartOutput, chart_agent
+from _agents.chart import ChartListOutput, chart_agent
 from config import REPORT_DIR
 from crews.price_comparison import generate_price_analysis_user_query
 from crews.promotion_campaigns import generate_promotion_campaign_user_query
 from crews.traffic_revenue import generate_traffic_revenue_query
-from file_handler import export_md
-from utils import generate_citation_markdown, get_first_temp_filename, get_latest_file, markdown_to_pdf
+from utils import generate_citation_markdown, markdown_to_pdf, export_md
 
 topics = {
     "promotion_campaigns": "Promotion campaigns",

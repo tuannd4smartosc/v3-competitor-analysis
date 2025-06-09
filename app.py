@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from manager import AiManager
 from config import REPORT_DIR
 from utils import show_confetti, get_pdf_download_link, sort_file_names
-from user_prompt import generate_prompt
 from st_printer import Printer
 import datetime
 
