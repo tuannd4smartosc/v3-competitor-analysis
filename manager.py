@@ -173,7 +173,7 @@ class AiManager:
         {data_context}
 
         From the search results above, generate multiple heapmaps, one separate heatmap for each country found in the provided data above. 
-        Each heatmap should display the discount rates of products grouped by their country of origin.
+        Each heatmap should display the discount rates of *top 5 discounted products* grouped by their country of origin.
         The heatmap should have product names or brands on one axis and their respective discount percentages on the other.
         For each product, use the following attributes:
 
