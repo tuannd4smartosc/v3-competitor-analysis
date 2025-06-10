@@ -13,8 +13,6 @@ class NarrowSearchOutput(BaseModel):
 class WebSearchToolType(Enum):
     web_search = "web_search"
     news_search = "news_search"
-    shopping_search = "shopping_search"
-    place_search = "place_search"
 
 class WebSearchToolItem(BaseModel):
     query: str
@@ -24,7 +22,7 @@ class WebSearchToolItem(BaseModel):
     "ISO 3166-1 alpha-2 country code to filter the search results by country (e.g., 'th', 'sg', 'vn', 'id')."
 
     search_type: WebSearchToolType
-    "Type of search required. The type must be either web_search, news_search, shopping_search or place_search."
+    "Type of search required. The type must be either web_search or news_search."
     
     date_range: str
     "Date range for the search results in Google Search tbs format (e.g., 'cdr:1,cd_min:1/1/2024,cd_max:12/31/2025')."
@@ -50,8 +48,8 @@ def search_normal(query: str, country_code: str, date_range: str) -> list[Narrow
     json_data = response.json()
     organic_results = json_data["organic"]
     results = [NarrowSearchOutput(
-        search_result=f"Title: {item['title']}\nSnippet: {item['snippet']}",
-        url=item["link"]
+        search_result=f"Title: {item.get('title', '')}\nSnippet: {item.get('snippet', '')}",
+        url=item.get("link", "")
     ) for item in organic_results]
     return results
 
@@ -73,55 +71,57 @@ def search_news(query: str, country_code: str, date_range: str) -> list[NarrowSe
     json_data = response.json()
     news = json_data["news"]
     results = [NarrowSearchOutput(
-        search_result=f"Title: {item['title']}\nSummary: {item['snippet']}",
-        url=item["link"]
+        search_result=f"Title: {item.get('title', '')}\nSummary: {item.get('section', '')}",
+        url=item.get("link", "")
     ) for item in news]
     return results
 
-def search_shopping(query: str, country_code: str, date_range: str) -> list[NarrowSearchOutput]:
-    url = "https://google.serper.dev/shopping"
+# def search_shopping(query: str, country_code: str, date_range: str) -> list[NarrowSearchOutput]:
+#     url = "https://google.serper.dev/shopping"
 
-    payload = json.dumps({
-        "q": query,
-        "gl": country_code,
-        "num": 10,
-        "tbs": date_range
-    })
-    headers = {
-        'X-API-KEY': SERPER_API_KEY,
-        'Content-Type': 'application/json'
-    }
+#     payload = json.dumps({
+#         "q": query,
+#         "gl": country_code,
+#         "num": 10,
+#         "tbs": date_range
+#     })
+#     headers = {
+#         'X-API-KEY': SERPER_API_KEY,
+#         'Content-Type': 'application/json'
+#     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
-    json_data = response.json()
-    shopping_results = json_data["shopping"]
-    results = [NarrowSearchOutput(
-        search_result=f"Title: {item['title']}\nPrice: {item['price']}",
-        url=item["link"]
-    ) for item in shopping_results]
-    return results
+#     response = requests.request("POST", url, headers=headers, data=payload)
+#     json_data = response.json()
+#     shopping_results = json_data["shopping"]
+#     print("shopping_results", shopping_results)
+#     results = [NarrowSearchOutput(
+#         search_result=f"Title: {item.get('title', '')}\nPrice: {item.get('price', '')}\nRating: {item.get('rating', '')}\nRating Count: {item.get('rating_count', '')}",
+#         url=item.get("link", "")
+#     ) for item in shopping_results]
+#     return results
 
-def search_places(query: str, country_code: str, date_range: str) -> list[NarrowSearchOutput]:
-    url = "https://google.serper.dev/places"
+# def search_places(query: str, country_code: str, date_range: str) -> list[NarrowSearchOutput]:
+#     url = "https://google.serper.dev/places"
 
-    payload = json.dumps({
-        "q": query,
-        "gl": country_code,
-        "num": 10,
-        "tbs": date_range
-    })
-    headers = {
-        'X-API-KEY': SERPER_API_KEY,
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    json_data = response.json()
-    places = json_data["places"]
-    results = [NarrowSearchOutput(
-        search_result=f"Name: {item['title']}\nAddress: {item['address']}",
-        url=item["link"]
-    ) for item in places]
-    return results
+#     payload = json.dumps({
+#         "q": query,
+#         "gl": country_code,
+#         "num": 10,
+#         "tbs": date_range
+#     })
+#     headers = {
+#         'X-API-KEY': SERPER_API_KEY,
+#         'Content-Type': 'application/json'
+#     }
+#     response = requests.request("POST", url, headers=headers, data=payload)
+#     json_data = response.json()
+#     places = json_data["places"]
+#     print("places",places)
+#     results = [NarrowSearchOutput(
+#         search_result=f"Title: {item.get('title', '')}\nAddress: {item.get('address', '')}\nRating: {item.get('rating', '')}\nRating Count: {item.get('rating_count', '')}\nPhone: {item.get('phone', '')}\nLongitude: {item.get('longitude', '')}\nLatitude: {item.get('latitude', '')}",
+#         url=item.get("link", "")
+#     ) for item in places]
+#     return results
     
 
 async def run_search(data: WebSearchToolItem) -> list[NarrowSearchOutput]:
@@ -134,10 +134,6 @@ async def run_search(data: WebSearchToolItem) -> list[NarrowSearchOutput]:
         return search_normal(query, country_code, date_range)
     elif search_type.value == WebSearchToolType.news_search.value:
         return search_news(query, country_code, date_range)
-    elif search_type.value == WebSearchToolType.shopping_search.value:
-        return search_shopping(query, country_code, date_range)         
-    elif search_type.value == WebSearchToolType.place_search.value:
-        return search_places(query, country_code, date_range)
     return []
     
 async def function_tool_run_search(

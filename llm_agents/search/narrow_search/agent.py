@@ -12,6 +12,7 @@ For each result:
 - Include the exact URL to the source of the data.
 - Use the `need_deep_dive` flag as `True` if the result appears valuable but lacks full context, precision, or needs further analysis.
 
+Translate all search results into English if they are in another language, ensuring the information remains accurate and relevant.
 Respond with a list of `SearchResultsItem` objects inside a `SearchResult`. Focus on quality over quantity—aim for high-value, informative entries.
 """
 

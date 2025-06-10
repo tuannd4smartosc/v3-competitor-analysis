@@ -5,6 +5,9 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from crews.promotion_campaigns import generate_promotion_campaign_user_query
 
@@ -30,12 +33,8 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)
 
 # Ask your question
-query = generate_promotion_campaign_user_query(
-    company_name="Nike",
-    competitor_names=["Adidas"],
-    date_range="June 1st to June 30th, 2025",
-    region="Southeast Asia"
-)
+query = "List all Asics promotion campaigns"
+
 result = qa({"query": query})
 
 # Show the result
