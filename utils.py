@@ -8,6 +8,8 @@ from markdown import markdown
 import json
 import os
 from weasyprint import HTML
+import csv
+import io
 
 from _agents.search import APAWebReference
 from config import REPORT_DIR
@@ -284,3 +286,102 @@ def export_md(markdown_content, output_filename):
     file_path = os.path.join(REPORT_DIR, output_filename)
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(markdown_content)
+        
+def generate_csv_file_from_text(csv_text, output_filename):
+    """
+    Generates a CSV file from a CSV formatted string.
+
+    Args:
+        csv_text (str): A string containing CSV data.
+        output_filename (str): The name of the CSV file to be created.
+    """
+    try:
+        # Use StringIO to treat the string as a file
+        csv_file_in_memory = io.StringIO(csv_text)
+
+        # Create a CSV reader from the in-memory file
+        reader = csv.reader(csv_file_in_memory)
+
+        # Open the output CSV file in write mode
+        with open(output_filename, 'w', newline='', encoding='utf-8') as outfile:
+            # Create a CSV writer for the output file
+            writer = csv.writer(outfile)
+
+            # Write each row from the in-memory reader to the output file
+            for row in reader:
+                writer.writerow(row)
+        print(f"CSV file '{output_filename}' generated successfully.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        
+        
+
+def convert_dict_to_csv_text_for_campaigns(data_dict):
+    """
+    Converts a nested Python dictionary into a CSV formatted string.
+
+    Args:
+        data_dict (dict): The input dictionary, potentially with nested structures.
+
+    Returns:
+        str: A string containing the CSV formatted data.
+    """
+
+    # Define the mapping for old column names to new desired names
+    # The key is the original flattened path, value is the new column header
+    column_name_map = {
+        'search_result_item_search_result': 'Promotion campaign summary',
+        'search_result_item_url': 'URL',
+        'metadata_date_range': 'Date range applied for search',
+        'metadata_country_code': 'Country',
+        'metadata_search_type': 'Search type'
+    }
+
+    # Flatten the dictionary and apply new column names
+    flattened_data = {}
+
+    # Process 'search_result_item'
+    if 'search_result_item' in data_dict:
+        sri = data_dict['search_result_item']
+        flattened_data[column_name_map.get('search_result_item_search_result', 'search_result_item_search_result')] = sri.get('search_result')
+        flattened_data['search_result_item_has_promotion_campaign'] = sri.get('has_promotion_campaign')
+        flattened_data['search_result_item_relativity_score'] = sri.get('relativity_score')
+        flattened_data[column_name_map.get('search_result_item_url', 'search_result_item_url')] = sri.get('url')
+        flattened_data['search_result_item_need_deep_dive'] = sri.get('need_deep_dive')
+
+    # Process 'metadata'
+    if 'metadata' in data_dict:
+        meta = data_dict['metadata']
+        flattened_data['metadata_query'] = meta.get('query')
+        flattened_data[column_name_map.get('metadata_date_range', 'metadata_date_range')] = meta.get('date_range')
+        flattened_data[column_name_map.get('metadata_country_code', 'metadata_country_code')] = meta.get('country_code')
+        flattened_data[column_name_map.get('metadata_search_type', 'metadata_search_type')] = meta.get('search_type')
+
+    # Ensure all values are strings for CSV writing, especially booleans or numbers
+    for key, value in flattened_data.items():
+        if value is not None:
+            flattened_data[key] = str(value)
+        else:
+            flattened_data[key] = '' # Handle None values as empty strings
+
+    # Prepare for CSV writing
+    # Use io.StringIO to write to an in-memory text buffer
+    output_buffer = io.StringIO()
+
+    # Get the fieldnames (column headers) from the flattened dictionary keys
+    fieldnames = list(flattened_data.keys())
+
+    # Create a CSV DictWriter object
+    # writerow expects a dictionary where keys match fieldnames
+    csv_writer = csv.DictWriter(output_buffer, fieldnames=fieldnames, quoting=csv.QUOTE_MINIMAL)
+
+    # Write the header row
+    csv_writer.writeheader()
+
+    # Write the data row
+    csv_writer.writerow(flattened_data)
+
+    # Get the CSV string from the buffer
+    csv_string = output_buffer.getvalue()
+
+    return csv_string
