@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from agents import Agent
-from llm_agents.search.tools.narrow_search_tool import narrow_search_tool
+from llm_agents.search.tools.shopping_tool import shopping_search_tool
 
 PROMPT = """
 You are Search Agent, an expert research assistant focused on competitive intelligence. Your task is to conduct reliable and focused web searches to support competitor analysis. Return only factual, structured, and well-sourced information.
@@ -53,10 +53,10 @@ class SearchResultWithMetadata(BaseModel):
     metadata: SearchMetadata
     """Metadata about the search, such as the query, date range, country code, and search type."""
     
-search_agent = Agent(
-    name="Search Agent",
+price_research_agent = Agent(
+    name="Price Research Agent",
     instructions=PROMPT,
     model="gpt-4o-mini",
     output_type=SearchResult,
-    tools=[narrow_search_tool]
+    tools=[shopping_search_tool]
 )
