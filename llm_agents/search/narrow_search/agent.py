@@ -20,14 +20,23 @@ class SearchResultsItem(BaseModel):
     search_result: str
     """The result of the search query, which should be a structured dataset, reliable facts or a detailed statistic relevant to the competitor analysis."""
     
-    need_deep_dive: bool
-    """Indicates if the search result requires further detailed analysis or exploration."""
+    has_promotion_campaign: bool
+    """Indicates whether the search result contains information about a promotion campaign, marketing event, or a product launch."""
     
     relativity_score: float
     """A score indicating the relevance of the search result to the query, on a scale from 0.0 to 1.0."""
     
     url: str
     """URL of the source where the search result was found."""
+    
+    country: str
+    """The country where the search was conducted."""
+    
+    date: str
+    """The date range of the search"""
+    
+    need_deep_dive: bool
+    """Indicates whether the search result requires further analysis or deep dive to extract more detailed information. If the result doesn't have enough information for all the fields: campaign_name, company_name, start_date, end_date, mechanic, offering, country, summary, url, then this should be set to True."""
 
 class SearchResult(BaseModel):
     search_results: list[SearchResultsItem]
