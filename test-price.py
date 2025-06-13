@@ -6,7 +6,7 @@ from llm_agents.search.price_search.agent import price_research_agent
 async def main():
     result = await Runner().run(
         price_research_agent,
-        input="Deep dive into this url: https://www.modernnotoriety.com/story-mfg-asics-gel-venture-6-release-date/ and generate a list of campaigns"
+        input="Collect all price information for Nike and Adidas in Southeast"
     )
     campaigns  = result.final_output_as(CampaignsList)
     print(campaigns)

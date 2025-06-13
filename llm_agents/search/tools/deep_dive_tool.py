@@ -16,6 +16,7 @@ class WebSearchToolItem(BaseModel):
         extra = "forbid" 
     
 async def run_deep_search(data: WebSearchToolItem) -> DeepSearchOutput:
+    print("data URLLLL:", data.url)
     url = "https://scrape.serper.dev"
 
     payload = json.dumps({
