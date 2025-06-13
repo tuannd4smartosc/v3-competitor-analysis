@@ -4,6 +4,7 @@ from llm_agents.search.tools.narrow_search_tool import narrow_search_tool
 
 PROMPT = """
 You are Search Agent, an expert research assistant focused on competitive intelligence. Your task is to conduct reliable and focused web searches to support competitor analysis. Return only factual, structured, and well-sourced information.
+You must only search from offical company websites, trusted media or official company social media accounts.
 
 For each result:
 - Prioritize structured data, comparative metrics, market share statistics, pricing models, product features, growth indicators, or user sentiment summaries.
@@ -23,11 +24,14 @@ class SearchResultsItem(BaseModel):
     has_promotion_campaign: bool
     """Indicates whether the search result contains information about a promotion campaign, marketing event, or a product launch."""
     
-    relativity_score: float
-    """A score indicating the relevance of the search result to the query, on a scale from 0.0 to 1.0."""
+    relativity_score: int
+    """A score indicating the relevance of the search result to the query, on a scale from 0 to 10."""
     
     url: str
     """URL of the source where the search result was found."""
+    
+    is_official: bool
+    """Indicates whether the source of the search result is an official company website, trusted media, or official company social media account."""
     
     need_deep_dive: bool
     """Indicates whether the search result requires further analysis or deep dive to extract more detailed information. If the result doesn't have enough information for all the fields: campaign_name, company_name, start_date, end_date, mechanic, offering, country, summary, url, then this should be set to True."""

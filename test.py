@@ -3,7 +3,7 @@ from agents import Runner
 from llm_agents.planner.agent import WebSearchPlan, planner_agent
 from llm_agents.search.narrow_search.agent import SearchMetadata, SearchResult, SearchResultWithMetadata, search_agent, SearchResultsItem
 from llm_agents.countries_detector.agent import countries_detector_agent, CountriesList
-from llm_agents.search.tools.deep_dive_tool import run_deep_search # This tool is not directly used in the provided snippet's loop, but kept for completeness
+from llm_agents.search.tools.deep_dive_tool import WebSearchToolItem, run_deep_search # This tool is not directly used in the provided snippet's loop, but kept for completeness
 from llm_agents.campaign.agent import Campaign, CampaignsList, campaign_agent
 from llm_agents.csv_maker.agent import csv_maker_agent, CSVResult
 from llm_agents.search.price_search.agent import price_research_agent
@@ -72,9 +72,9 @@ async def run_promotion_campaigns(company_name, company_competitors, region, dat
             print(f"No search results for query: {search_item.query[:30]}...")
             return []
 
-        threshold = 0.7
+        threshold = 7
         filtered_results = [
-            item for item in search_result.search_results if item.relativity_score >= threshold
+            item for item in search_result.search_results if item.relativity_score >= threshold and item.is_official
         ]
         print(f"  Query '{search_item.query[:30]}...': Found {len(filtered_results)} relevant results (out of {len(search_result.search_results)})")
         return [SearchResultWithMetadata(
@@ -103,25 +103,14 @@ async def run_promotion_campaigns(company_name, company_competitors, region, dat
     campaigns: list[Campaign] = []
     context_lines = [] # Collect context lines to write later
     
-    csv_agent_output = await safe_run(
-        csv_maker_agent,
-        input=f"""
-        Given this data: {json.dumps([item.model_dump_json() for item in search_results_items])}. \n\n
-        From the given data, extract promotion campaigns from Nike and Adidas in April 2025. \n\n
-        Each campaign should have the following fields:
-        Campaign Name, Company Name, Start Date, End Date, Mechanic, Offerings, Country, Summary, URL. \n\n
-        Country code from the data is ISO 3166-1 alpha-2 country code (e.g., 'th', 'sg', 'vn', 'id'). Convert these country codes to their full country names (e.g., 'th' to 'Thailand', 'sg' to 'Singapore', etc.). \n\n
-        
-        Generate a CSV file with the following columns: 
-        Campaign Name, Company Name, Start Date, End Date, Mechanic, Offerings, Country, Summary, URL
-        """,
-        output_type=CSVResult
-    )
-
     context_lines.append(json.dumps([item.model_dump_json() for item in search_results_items]))
-    print("CSV Agent Output:", csv_agent_output)
-    generate_csv_file_from_text(csv_agent_output.csv_file, "campaigns.csv")
     
+    deep_dive_tasks = [run_deep_search(WebSearchToolItem(url=item.search_result_item.url)) for item in search_results_items]
+    deep_dive_results = await asyncio.gather(*deep_dive_tasks)
+    print("deep_dive_results",deep_dive_results)
+    
+    print(f"Deep dive results: {len(deep_dive_results)} items")
+        
     print(f"\nTotal campaigns found: {len(campaigns)}")
     # print("Campaigns found:", campaigns) # Uncomment if you want to see full campaign objects
     print(">>>> URLs processed:", len(urls), "unique URLs:", len(set(urls)))
@@ -130,69 +119,18 @@ async def run_promotion_campaigns(company_name, company_competitors, region, dat
     print("\nWriting outputs...")
     with open("context.txt", "w", encoding="utf-8") as file:
         file.write("".join(context_lines))
-
+        
+    print("\nWriting outputs...")
     with open("data.txt", "w", encoding="utf-8") as file:
-        campaign_json = [campaign.model_dump_json() for campaign in campaigns]
-        file.write(json.dumps(campaign_json, indent=2, ensure_ascii=False))
+        file.write("".join(json.dumps([item.model_dump_json() for item in deep_dive_results])))
+
+    # with open("data.txt", "w", encoding="utf-8") as file:
+    #     campaign_json = [campaign.model_dump_json() for campaign in campaigns]
+    #     file.write(json.dumps(campaign_json, indent=2, ensure_ascii=False))
 
     print("Processing complete!")
     
     return "".join(context_lines)
-
-async def run_price_analysis(company_name, company_competitors, region, date_range):
-    print("START running pricing")
-    countries_list = await detect_countries(region, company_name, company_competitors)
-    search_plan_tasks = [
-        generate_search_plan(company_name, company_competitors, country.country_name, date_range, "new products launched, product prices, and discounts")
-        for country in countries_list.countries
-    ]
-    search_plans = await asyncio.gather(*search_plan_tasks)
-    all_searches = [search for plan in search_plans if plan for search in plan.searches]
-    
-    async def process_price_search(search_item) -> list[SearchResultWithMetadata]:
-        search_prompt = (
-            f"Search for: {search_item.query} in {search_item.country_code} "
-            f"and date range {search_item.date_range}"
-        )
-        search_result = await safe_run(
-            price_research_agent,
-            input=search_prompt,
-            output_type=SearchResult
-        )
-        if not search_result:
-            print(f"No search results for query: {search_item.query[:30]}...")
-            return []
-
-        threshold = 0.7
-        filtered_results = [
-            item for item in search_result.search_results if item.relativity_score >= threshold
-        ]
-        print(f"  Price Query '{search_item.query[:30]}...': Found {len(filtered_results)} relevant results (out of {len(search_result.search_results)})")
-        return [SearchResultWithMetadata(
-                    search_result_item=item,
-                    metadata=SearchMetadata(
-                        query=search_item.query,
-                        country_code=search_item.country_code,
-                        search_type=search_item.search_type.value
-                    )
-                )
-                for item in filtered_results 
-            ]
-
-    # Create a list of tasks for all narrow searches
-    context_lines = []
-    price_search_tasks = [process_price_search(search_item) for search_item in all_searches]
-    search_results_lists = await asyncio.gather(*price_search_tasks)
-
-    # Flatten the list of lists into a single list of SearchResultsItem
-    search_results_items = [item for sublist in search_results_lists for item in sublist]
-    context_lines.append(json.dumps([item.model_dump_json() for item in search_results_items]))
-    
-    print("\nWriting outputs...")
-    with open("context-price.txt", "w", encoding="utf-8") as file:
-        file.write("".join(context_lines))
-        
-    return None
 
 async def main():
     company_name = input("Enter your company's name: ")
@@ -201,7 +139,7 @@ async def main():
     date_range = input("Enter the date range for the research: ")
 
     await run_promotion_campaigns(company_name, company_competitors, region, date_range)
-    await run_price_analysis(company_name, company_competitors, region, date_range)
+    # await run_price_analysis(company_name, company_competitors, region, date_range)
 
 if __name__ == "__main__":
     asyncio.run(main())
