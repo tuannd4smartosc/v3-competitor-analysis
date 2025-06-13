@@ -25,7 +25,7 @@ Only return valid structured JSON matching the WebSearchPlan schema. Do not incl
 )
 
 class WebSearchType(Enum):
-   web_search = "web_search"
+   normal_search = "normal_search"
    news_search = "news_search"
 
 class WebSearchItem(BaseModel):

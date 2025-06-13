@@ -11,7 +11,7 @@ class NarrowSearchOutput(BaseModel):
     url: str
         
 class WebSearchToolType(Enum):
-    web_search = "web_search"
+    normal_search = "normal_search"
     news_search = "news_search"
 
 class WebSearchToolItem(BaseModel):
@@ -46,6 +46,7 @@ def search_normal(query: str, country_code: str, date_range: str) -> list[Narrow
 
     response = requests.request("POST", url, headers=headers, data=payload)
     json_data = response.json()
+    print("json_data",json_data)
     organic_results = json_data["organic"]
     results = [NarrowSearchOutput(
         search_result=f"Title: {item.get('title', '')}\nSnippet: {item.get('snippet', '')}",
@@ -68,7 +69,9 @@ def search_news(query: str, country_code: str, date_range: str) -> list[NarrowSe
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
+    print("response",response)
     json_data = response.json()
+    print("json_data",json_data)
     news = json_data["news"]
     results = [NarrowSearchOutput(
         search_result=f"Title: {item.get('title', '')}\nSummary: {item.get('section', '')}",
@@ -130,7 +133,7 @@ async def run_search(data: WebSearchToolItem) -> list[NarrowSearchOutput]:
     search_type = data.search_type
     date_range = data.date_range
     
-    if search_type.value == WebSearchToolType.web_search.value:
+    if search_type.value == WebSearchToolType.normal_search.value:
         return search_normal(query, country_code, date_range)
     elif search_type.value == WebSearchToolType.news_search.value:
         return search_news(query, country_code, date_range)
@@ -140,6 +143,7 @@ async def function_tool_run_search(
     ctx: RunContextWrapper[Any], args: str
 ) -> str:
     """Function tool used for the web search using Serper API."""
+    print("args:", args)
     web_search_payload = WebSearchToolItem.model_validate_json(args)
     return await run_search(web_search_payload)
 
